@@ -23,15 +23,6 @@ BOT_SCOPE = 'bot'
 # In a production environment, you may want to move some of this into a real data store.
 $teams = {}
 
-# Since we're going to create a Slack client object for each team, this helper keeps all of that logic in one place.
-def create_slack_client(slack_api_secret)
-  Slack.configure do |config|
-    config.token = slack_api_secret
-    fail 'Missing API token' unless config.token
-  end
-  Slack::Web::Client.new
-end
-
 # Slack uses OAuth for user authentication. This auth process is performed by exchanging a set of
 # keys and tokens between Slack's servers and yours. This process allows the authorizing user to confirm
 # that they want to grant our bot access to their team.
