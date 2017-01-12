@@ -8,8 +8,6 @@ GEM
       tzinfo (~> 1.1)
     concurrent-ruby (1.0.2)
     dotenv (2.0.1)
-    dotenv-rails (2.0.1)
-      dotenv (= 2.0.1)
     faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.10.0)
@@ -48,7 +46,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  dotenv-rails
+  dotenv
   redis
   sinatra (~> 1.4.7)
   slack-ruby-client (~> 0.7.7)

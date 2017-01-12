@@ -1,6 +1,3 @@
-require 'json'
-require 'redis'
-
 class Storage
   def initialize(redis_url = ENV['REDISTOGO_URL'])
     @redis = get_client(redis_url)

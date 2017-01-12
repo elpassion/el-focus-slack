@@ -1,6 +1,3 @@
-require 'sinatra/base'
-require 'slack-ruby-client'
-
 class API < Sinatra::Base
   # This is the endpoint Slack will post Event data to.
   post '/events' do
