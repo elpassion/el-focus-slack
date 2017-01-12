@@ -64,11 +64,8 @@ class Auth < Sinatra::Base
       # Yay! Auth succeeded! Let's store the tokens and create a Slack client to use in our Events handlers.
       # The tokens we receive are used for accessing the Web API, but this process also creates the Team's bot user and
       # authorizes the app to access the Team's Events.
-      team_id = response['team_id']
-      $storage.set team_id, {
-        user_access_token: response['access_token'],
-        bot_user_id: response['bot']['bot_user_id'],
-        bot_access_token: response['bot']['bot_access_token']
+      $storage.set "user:#{response['user_id']}", {
+        access_token: response['access_token']
       }
 
       # Be sure to let the user know that auth succeeded.
