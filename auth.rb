@@ -4,12 +4,11 @@ require 'slack-ruby-client'
 # Load Slack app info into a hash called `config` from the environment variables assigned during setup
 # See the "Running the app" section of the README for instructions.
 SLACK_CONFIG = {
-  slack_client_id: ENV['SLACK_CLIENT_ID'],
-  slack_api_secret: ENV['SLACK_API_SECRET'],
-  slack_redirect_uri: ENV['SLACK_REDIRECT_URI'],
-  slack_verification_token: ENV['SLACK_VERIFICATION_TOKEN']
+  client_id: ENV['SLACK_CLIENT_ID'],
+  api_secret: ENV['SLACK_API_SECRET'],
+  redirect_uri: ENV['SLACK_REDIRECT_URI'],
+  verification_token: ENV['SLACK_VERIFICATION_TOKEN']
 }
-
 # Check to see if the required variables listed above were provided, and raise an exception if any are missing.
 missing_params = SLACK_CONFIG.select { |key, value| value.nil? }
 if missing_params.any?
@@ -42,7 +41,7 @@ class Auth < Sinatra::Base
   # This is the HTML markup for our "Add to Slack" button.
   # Note that we pass the `client_id`, `scope` and "redirect_uri" parameters specific to our application's configs.
   add_to_slack_button = %(
-    <a href=\"https://slack.com/oauth/authorize?scope=#{BOT_SCOPE}&client_id=#{SLACK_CONFIG[:slack_client_id]}&redirect_uri=#{SLACK_CONFIG[:redirect_uri]}\">
+    <a href=\"https://slack.com/oauth/authorize?scope=#{BOT_SCOPE}&client_id=#{SLACK_CONFIG[:client_id]}&redirect_uri=#{SLACK_CONFIG[:redirect_uri]}\">
       <img alt=\"Add to Slack\" height=\"40\" width=\"139\" src=\"https://platform.slack-edge.com/img/add_to_slack.png\"/>
     </a>
   )
@@ -67,9 +66,9 @@ class Auth < Sinatra::Base
     begin
       response = client.oauth_access(
         {
-          client_id: SLACK_CONFIG[:slack_client_id],
-          client_secret: SLACK_CONFIG[:slack_api_secret],
-          redirect_uri: SLACK_CONFIG[:slack_redirect_uri],
+          client_id: SLACK_CONFIG[:client_id],
+          client_secret: SLACK_CONFIG[:api_secret],
+          redirect_uri: SLACK_CONFIG[:redirect_uri],
           code: params[:code] # (This is the OAuth code mentioned above)
         }
       )

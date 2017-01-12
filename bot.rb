@@ -46,7 +46,7 @@ class API < Sinatra::Base
     request_data = JSON.parse(request.body.read)
     # Check the verification token provided with the request to make sure it matches the verification token in
     # your app's setting to confirm that the request came from Slack.
-    unless SLACK_CONFIG[:slack_verification_token] == request_data['token']
+    unless SLACK_CONFIG[:verification_token] == request_data['token']
       halt 403, "Invalid Slack verification token received: #{request_data['token']}"
     end
 
