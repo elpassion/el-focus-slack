@@ -43,24 +43,28 @@ class Events
   # You may notice that user and channel IDs may be found in
   # different places depending on the type of event we're receiving.
 
-  def self.message(team_id, event_data)
-    user_id = event_data['user']
-    # Don't process messages sent from our bot user
-    bot_id = $storage.get(team_id).fetch('bot_user_id')
-    channel = event_data['channel']
-    unless user_id == bot_id
-      self.send_response(team_id, user_id, channel)
+  def self.message(*args)
+    $storage.get_users.each do |user_id, user_data|
+      client = client(user_data.fetch('access_token'))
+      ims = client.im_list.ims
+      ims.each do |channel|
+        puts "Downloading for [#{channel.id}]..."
+        history = client.im_history(channel: channel.id, count: 1, unreads: 1)
+        return if history.messages.empty?
+        last_message = history.messages.last
+        last_message_user = last_message.user
+        if history.unread_count_display > 0
+          pp history
+          # post_message if last_message_user is_interlocutor?
+        end
+      end
     end
   end
 
-  # Send a response to an Event via the Web API.
-  def self.send_response(team_id, user_id, channel = user_id)
-    client = SlackClient.new(team_id).get
-    client.chat_postMessage(
-      as_user: true,
-      channel: user_id,
-      text: "Uga buga!"
-    )
+  private
+
+  def self.client(access_token)
+    SlackClient.new(access_token).get
   end
 
 end

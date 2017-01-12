@@ -15,7 +15,7 @@ end
 
 # Set the OAuth scope of your bot. We're just using `bot` for this demo, as it has access to
 # all the things we'll need to access. See: https://api.slack.com/docs/oauth-scopes for more info.
-PERMISSION_SCOPE = 'bot+im:read'
+PERMISSION_SCOPE = 'bot+im:read+users:read+im:history'
 
 # This hash will contain all the info for each authed team, as well as each team's Slack client object.
 # In a production environment, you may want to move some of this into a real data store.
