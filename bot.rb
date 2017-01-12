@@ -65,15 +65,6 @@ class API < Sinatra::Base
         # Events have a "type" attribute included in their payload, allowing you to handle different
         # Event payloads as needed.
         case event_data['type']
-          when 'team_join'
-            # Event handler for when a user joins a team
-            Events.user_join(team_id, event_data)
-          when 'reaction_added'
-            # Event handler for when a user reacts to a message or item
-            Events.reaction_added(team_id, event_data)
-          when 'pin_added'
-            # Event handler for when a user pins a message
-            Events.pin_added(team_id, event_data)
           when 'message'
             # Event handler for messages, including Share Message actions
             Events.message(team_id, event_data)
@@ -92,39 +83,6 @@ end
 class Events
   # You may notice that user and channel IDs may be found in
   # different places depending on the type of event we're receiving.
-
-  # A new user joins the team
-  def self.user_join(team_id, event_data)
-    user_id = event_data['user']['id']
-    # Store a copy of the tutorial_content object specific to this user, so we can edit it
-    $teams[team_id][user_id] = {
-      tutorial_content: SlackTutorial.new
-    }
-    # Send the user our welcome message, with the tutorial JSON attached
-    self.send_response(team_id, user_id)
-  end
-
-  # A user reacts to a message
-  def self.reaction_added(team_id, event_data)
-    user_id = event_data['user']
-    if $teams[team_id][user_id]
-      channel = event_data['item']['channel']
-      ts = event_data['item']['ts']
-      SlackTutorial.update_item(team_id, user_id, SlackTutorial.items[:reaction])
-      self.send_response(team_id, user_id, channel, ts)
-    end
-  end
-
-  # A user pins a message
-  def self.pin_added(team_id, event_data)
-    user_id = event_data['user']
-    if $teams[team_id][user_id]
-      channel = event_data['item']['channel']
-      ts = event_data['item']['message']['ts']
-      SlackTutorial.update_item(team_id, user_id, SlackTutorial.items[:pin])
-      self.send_response(team_id, user_id, channel, ts)
-    end
-  end
 
   def self.message(team_id, event_data)
     user_id = event_data['user']
