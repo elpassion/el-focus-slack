@@ -1,5 +1,4 @@
 require 'sinatra/base'
-require 'slack-ruby-client'
 
 # Load Slack app info into a hash called `config` from the environment variables assigned during setup
 # See the "Running the app" section of the README for instructions.
@@ -77,13 +76,12 @@ class Auth < Sinatra::Base
       # The tokens we receive are used for accessing the Web API, but this process also creates the Team's bot user and
       # authorizes the app to access the Team's Events.
       team_id = response['team_id']
-      $teams[team_id] = {
+      $storage.set team_id, {
         user_access_token: response['access_token'],
         bot_user_id: response['bot']['bot_user_id'],
         bot_access_token: response['bot']['bot_access_token']
       }
 
-      $teams[team_id]['client'] = create_slack_client(response['bot']['bot_access_token'])
       # Be sure to let the user know that auth succeeded.
       status 200
       body "Yay! Auth succeeded! You're awesome!"
