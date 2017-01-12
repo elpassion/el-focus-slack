@@ -1,3 +1,4 @@
+require './config/initialize'
 require './auth'
 require './bot'
 
