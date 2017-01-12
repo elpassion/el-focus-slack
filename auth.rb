@@ -17,7 +17,7 @@ end
 
 # Set the OAuth scope of your bot. We're just using `bot` for this demo, as it has access to
 # all the things we'll need to access. See: https://api.slack.com/docs/oauth-scopes for more info.
-BOT_SCOPE = 'bot'
+PERMISSION_SCOPE = 'bot+im:read'
 
 # This hash will contain all the info for each authed team, as well as each team's Slack client object.
 # In a production environment, you may want to move some of this into a real data store.
@@ -31,7 +31,7 @@ class Auth < Sinatra::Base
   # This is the HTML markup for our "Add to Slack" button.
   # Note that we pass the `client_id`, `scope` and "redirect_uri" parameters specific to our application's configs.
   add_to_slack_button = %(
-    <a href=\"https://slack.com/oauth/authorize?scope=#{BOT_SCOPE}&client_id=#{SLACK_CONFIG[:client_id]}&redirect_uri=#{SLACK_CONFIG[:redirect_uri]}\">
+    <a href=\"https://slack.com/oauth/authorize?scope=#{PERMISSION_SCOPE}&client_id=#{SLACK_CONFIG[:client_id]}&redirect_uri=#{SLACK_CONFIG[:redirect_uri]}\">
       <img alt=\"Add to Slack\" height=\"40\" width=\"139\" src=\"https://platform.slack-edge.com/img/add_to_slack.png\"/>
     </a>
   )
