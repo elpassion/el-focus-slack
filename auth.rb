@@ -17,14 +17,6 @@ end
 # all the things we'll need to access. See: https://api.slack.com/docs/oauth-scopes for more info.
 PERMISSION_SCOPE = 'bot+im:read+users:read+im:history'
 
-# This hash will contain all the info for each authed team, as well as each team's Slack client object.
-# In a production environment, you may want to move some of this into a real data store.
-$teams = {}
-
-# Slack uses OAuth for user authentication. This auth process is performed by exchanging a set of
-# keys and tokens between Slack's servers and yours. This process allows the authorizing user to confirm
-# that they want to grant our bot access to their team.
-# See https://api.slack.com/docs/oauth for more information.
 class Auth < Sinatra::Base
   # This is the HTML markup for our "Add to Slack" button.
   # Note that we pass the `client_id`, `scope` and "redirect_uri" parameters specific to our application's configs.
