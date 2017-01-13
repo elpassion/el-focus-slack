@@ -18,7 +18,7 @@ module Dnd
 
         puts "Downloading for [#{channel_id}]..."
         history = client.im_history(channel: channel_id, count: 1, unreads: 1)
-        return if history.messages.empty?
+        next if history.messages.empty?
         last_message = history.messages.last
         last_message_user = last_message.user
         # post_message if unread pending and last_message_user is_interlocutor?

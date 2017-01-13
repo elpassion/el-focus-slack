@@ -2,7 +2,7 @@ require_relative 'config/initialize'
 
 # Set the OAuth scope of your bot. We're just using `bot` for this demo, as it has access to
 # all the things we'll need to access. See: https://api.slack.com/docs/oauth-scopes for more info.
-PERMISSION_SCOPE = 'bot+im:read+users:read+im:history'
+PERMISSION_SCOPE = 'bot+im:read+users:read+im:history+chat:write:user'
 
 class Auth < Sinatra::Base
   # This is the HTML markup for our "Add to Slack" button.
