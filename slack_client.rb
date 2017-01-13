@@ -1,6 +1,10 @@
 require 'slack-ruby-client'
 
 class SlackClient
+  def self.for_acces_token(access_token)
+    new(access_token).get
+  end
+
   def initialize(access_token)
     @access_token = access_token
   end

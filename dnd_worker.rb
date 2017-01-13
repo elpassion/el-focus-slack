@@ -1,6 +1,8 @@
 require_relative 'config/initialize'
 
 module Dnd
+  
+
   class SendBusyMessageWorker
     include Sidekiq::Worker
     sidekiq_options retry: false
@@ -8,9 +10,8 @@ module Dnd
     def perform(user_id)
       user = User.new(user_id)
       return unless user.busy?
-      access_token = storage.get("user:#{user_id}").fetch('access_token')
 
-      client = client(access_token)
+      client = SlackClient.for_acces_token(user.access_token)
 
       ims(client).each do |channel|
         channel_id = channel.id
@@ -34,21 +35,38 @@ module Dnd
 
     private
 
-    def client(access_token)
-      SlackClient.new(access_token).get
-    end
-
     def ims(client)
       client.im_list.ims
     end
 
-    def busy?(user_id)
-      $storage.exists("busy:#{user_id}")
-    end
+  end
 
-    def storage
-      $storage
+  class SetSnoozeWorker
+    include Sidekiq::Worker
+    sidekiq_options retry: false
+
+    def perform(user_id, time)
+      user = User.new(user_id)
+      return unless user.busy?
+
+      client = SlackClient.for_acces_token(user.access_token)
+
+      client.dnd_setSnooze(num_minutes: time)
+    end
+  end
+
+  class EndSnoozeWorker
+    include Sidekiq::Worker
+    sidekiq_options retry: false
+
+    def perform(user_id)
+      user = User.new(user_id)
+
+      client = SlackClient.for_acces_token(user.access_token)
+
+      client.dnd_endSnooze
     end
 
   end
+
 end

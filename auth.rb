@@ -1,6 +1,6 @@
 require_relative 'config/initialize'
 
-PERMISSION_SCOPE = 'bot+im:read+users:read+im:history+chat:write:user'
+PERMISSION_SCOPE = 'bot+im:read+users:read+im:history+chat:write:user+dnd:write'
 
 class Auth < Sinatra::Base
   add_to_slack_button = %(

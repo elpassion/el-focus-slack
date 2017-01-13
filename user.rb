@@ -19,16 +19,22 @@ class User
     }
   end
 
+  def access_token
+    storage.get(user_key).fetch('access_token')
+  end
+
   def start_pomodoro(time)
     time ||= DEFAULT_POMODORO_TIME
     time_left = time.to_i * 60
     storage.set busy_key, { paused: 0, started_at: Time.now.to_i, time_left: time_left }, ex: time_left, nx: true
     Dnd::SendBusyMessageWorker.perform_async(user_id)
+    Dnd::SetSnoozeWorker.perform_async(user_id, time.to_i)
     PomodoroSessionUpdateResult.ok
   end
 
   def stop_pomodoro
     storage.del busy_key
+    Dnd::EndSnoozeWorker.perform_async(user_id)
     PomodoroSessionUpdateResult.ok
   end
 
@@ -50,6 +56,7 @@ class User
     state = current_state.merge('paused' => 1, 'time_left' => time_left)
 
     storage.set busy_key, state
+    Dnd::EndSnoozeWorker.perform_async(user_id)
     PomodoroSessionUpdateResult.ok
   end
 
@@ -61,6 +68,7 @@ class User
     time_left = current_state.fetch('time_left').to_i
     state     = current_state.merge('started_at' => Time.now.to_i, 'paused' => 0)
     storage.set busy_key, state, ex: time_left
+    Dnd::SetSnoozeWorker.perform_async(user_id, (time_left / 60))
     PomodoroSessionUpdateResult.ok
   end
 
