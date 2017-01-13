@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require_groups = [:default, ENV['RACK_ENV']].compact
+require_groups = [:default, :web, ENV['RACK_ENV']].compact
 Bundler.require(*require_groups)
 Dotenv.load if defined?(Dotenv)
 
