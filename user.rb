@@ -11,6 +11,12 @@ class User
     kv_storage.exists(busy_key)
   end
 
+  def access_token=(access_token)
+    kv_storage.set user_key, {
+      access_token: access_token
+    }
+  end
+
   private
 
   attr_reader :user_id
