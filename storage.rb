@@ -4,7 +4,12 @@ class Storage
   end
 
   def get(key)
-    JSON.parse(redis.get(key))
+    json = redis.get(key)
+    JSON.parse(json)
+  end
+
+  def del(key)
+    redis.del(key)
   end
 
   # Returns
@@ -23,8 +28,8 @@ class Storage
     redis.keys(pattern)
   end
 
-  def set(key, data)
-    redis.set(key, JSON.generate(data))
+  def set(key, data, **args)
+    redis.set(key, JSON.generate(data), args)
   end
 
   private
