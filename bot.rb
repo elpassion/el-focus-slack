@@ -38,24 +38,23 @@ class API < Sinatra::Base
   end
 end
 
-# This class contains all of the Event handling logic.
 class Events
   require_relative './dnd_worker'
-  # You may notice that user and channel IDs may be found in
-  # different places depending on the type of event we're receiving.
 
   def self.message(team_id, event_data)
     user_id = event_data['user']
     return unless user_id # we don't react to messages sent by bot
+    user = User.new(user_id)
 
     match_data = /\Apomodoro (?<command>start|pause|unpause|stop)(\s(?<time>\d+))?\z/.match(event_data['text'])
     return unless match_data
+    time_param = match_data['time']
 
     response = case match_data['command']
-                 when 'start'   then start_pomodoro(user_id, match_data['time'])
-                 when 'pause'   then pause_pomodoro(user_id)
-                 when 'stop'    then stop_pomodoro(user_id)
-                 when 'unpause' then unpause_pomodoro(user_id)
+                 when 'start'   then start_pomodoro(time_param, user)
+                 when 'pause'   then pause_pomodoro(user)
+                 when 'stop'    then stop_pomodoro(user)
+                 when 'unpause' then unpause_pomodoro(user)
                end
 
     bot_access_token = $storage.get("bot:#{team_id}").fetch('access_token')
@@ -64,47 +63,29 @@ class Events
 
   private
 
+  def self.message_or_error(result, message)
+    return result.message if result.status == :error
+    message
+  end
+
+  def self.unpause_pomodoro(user)
+    message_or_error(user.unpause_pomodoro, 'pomodoro session unpaused')
+  end
+
+  def self.stop_pomodoro(user)
+    message_or_error(user.stop_pomodoro, 'pomodoro session stopped')
+  end
+
+  def self.pause_pomodoro(user)
+    message_or_error(user.pause_pomodoro, 'pomodoro session paused')
+  end
+
+  def self.start_pomodoro(time_param, user)
+    message_or_error(user.start_pomodoro(time_param), 'pomodoro session started')
+  end
+
   def self.client(access_token)
     SlackClient.new(access_token).get
-  end
-
-  def self.start_pomodoro(user_id, time)
-    time ||= 25
-    time_left = time.to_i * 60
-    $storage.set "busy:user:#{user_id}", { paused: 0, started_at: Time.now.to_i, time_left: time_left }, ex: time_left, nx: true
-    Dnd::SendBusyMessageWorker.perform_async(user_id)
-    'started pomodoro session'
-  end
-
-  def self.stop_pomodoro(user_id)
-    $storage.del "busy:user:#{user_id}"
-    'finished pomodoro session'
-  end
-
-  def self.pause_pomodoro(user_id)
-    current_state = $storage.get "busy:user:#{user_id}"
-    return 'no pomodoro session' unless current_state
-    return 'pomodoro session already paused' if current_state.fetch('paused') == 1
-
-    started   = current_state.fetch('started_at').to_i
-    elapsed_time = Time.now.to_i - started
-    time_left = current_state.fetch('time_left').to_i - elapsed_time
-
-    state = current_state.merge('paused' => 1, 'time_left' => time_left)
-
-    $storage.set "busy:user:#{user_id}", state
-    'paused pomodoro session'
-  end
-
-  def self.unpause_pomodoro(user_id)
-    current_state = $storage.get "busy:user:#{user_id}"
-    return 'no pomodoro session' unless current_state
-    return 'pomodoro session not paused' if current_state.fetch('paused') == 0
-
-    time_left = current_state.fetch('time_left').to_i
-    state     = current_state.merge('started_at' => Time.now.to_i, 'paused' => 0)
-    pp $storage.set "busy:user:#{user_id}", state, ex: time_left
-    'pomodoro unpaused'
   end
 
 end

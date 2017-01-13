@@ -24,14 +24,13 @@ module Dnd
         # post_message if unread pending and last_message_user is_interlocutor?
         if history.unread_count_display > 0 && last_message_user == channel_user
           puts "sending message to channel #{channel_id}, user: #{last_message_user}"
-          client.chat_postMessage(channel: channel_id, text: 'This is ElPomodoro Slack App test!', as_user: true)
+          client.chat_postMessage(channel: channel_id, text: "Sorry, I'm busy right now ;(", as_user: true)
         end
       end
 
       puts 'scheduling next in 20 seconds'
       self.class.perform_in 20, user_id
     end
-
 
     private
 
