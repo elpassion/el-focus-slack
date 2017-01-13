@@ -40,12 +40,13 @@ end
 
 # This class contains all of the Event handling logic.
 class Events
+  require_relative './dnd_worker'
   # You may notice that user and channel IDs may be found in
   # different places depending on the type of event we're receiving.
 
   def self.message(team_id, event_data)
     user_id = event_data['user']
-    return unless user_id # message sent by bot
+    return unless user_id # we don't react to messages sent by bot
 
     match_data = /\Apomodoro (?<command>start|pause|unpause|stop)(\s(?<time>\d+))?\z/.match(event_data['text'])
     return unless match_data
@@ -71,6 +72,7 @@ class Events
     time ||= 25
     time_left = time.to_i * 60
     $storage.set "busy:user:#{user_id}", { paused: 0, started_at: Time.now.to_i, time_left: time_left }, ex: time_left, nx: true
+    Dnd::SendBusyMessageWorker.perform_async(user_id)
     'started pomodoro session'
   end
 
