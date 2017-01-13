@@ -12,6 +12,10 @@ class Storage
     redis.del(key)
   end
 
+  def exists(key)
+    redis.exists(key)
+  end
+
   # Returns
   # [{user_id => access_token}, {user_id => access_token}]
   def get_users

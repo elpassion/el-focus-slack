@@ -23,5 +23,6 @@ end
 
 require_relative '../storage'
 require_relative '../slack_client'
+require_relative '../user'
 
 $storage = Storage.new
