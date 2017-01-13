@@ -1,17 +1,8 @@
-# Load Slack app info into a hash called `config` from the environment variables assigned during setup
-# See the "Running the app" section of the README for instructions.
-SLACK_CONFIG = {
-  client_id: ENV['SLACK_CLIENT_ID'],
-  api_secret: ENV['SLACK_API_SECRET'],
-  redirect_uri: ENV['SLACK_REDIRECT_URI'],
-  verification_token: ENV['SLACK_VERIFICATION_TOKEN']
-}
-# Check to see if the required variables listed above were provided, and raise an exception if any are missing.
-missing_params = SLACK_CONFIG.select { |key, value| value.nil? }
-if missing_params.any?
-  error_msg = missing_params.keys.join(", ").upcase
-  raise "Missing Slack config variables: #{error_msg}"
-end
+require 'sinatra/base'
+require 'sidekiq'
+require 'sidekiq/api'
+require 'sidekiq/web'
+require_relative 'config/initialize'
 
 # Set the OAuth scope of your bot. We're just using `bot` for this demo, as it has access to
 # all the things we'll need to access. See: https://api.slack.com/docs/oauth-scopes for more info.
