@@ -1,7 +1,3 @@
-require 'sinatra/base'
-require 'sidekiq'
-require 'sidekiq/api'
-require 'sidekiq/web'
 require_relative 'config/initialize'
 
 # Set the OAuth scope of your bot. We're just using `bot` for this demo, as it has access to
