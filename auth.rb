@@ -68,6 +68,11 @@ class Auth < Sinatra::Base
         access_token: response['access_token']
       }
 
+      $storage.set "bot:#{response['team_id']}", {
+        access_token: response['bot']['bot_access_token'],
+        user_id: response['bot']['bot_user_id'] # don't know if needed
+      }
+
       # Be sure to let the user know that auth succeeded.
       status 200
       body "Yay! Auth succeeded! You're awesome!"
