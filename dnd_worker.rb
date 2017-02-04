@@ -9,7 +9,7 @@ module Dnd
 
     def perform(user_id)
       user = User.new(user_id)
-      return unless user.busy?
+      return unless user.session_exists?
 
       client = SlackClient.for_acces_token(user.access_token)
 
@@ -47,7 +47,7 @@ module Dnd
 
     def perform(user_id, time)
       user = User.new(user_id)
-      return unless user.busy?
+      return unless user.session_exists?
 
       client = SlackClient.for_acces_token(user.access_token)
 

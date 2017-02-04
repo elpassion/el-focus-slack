@@ -9,10 +9,6 @@ class User
     @user_id = user_id
   end
 
-  def busy?
-    storage.exists(busy_key)
-  end
-
   def access_token=(access_token)
     storage.set user_key, {
       access_token: access_token
@@ -26,48 +22,59 @@ class User
   def start_pomodoro(time)
     time ||= DEFAULT_POMODORO_TIME
     time_left = time.to_i * 60
-    storage.set busy_key, { paused: 0, started_at: Time.now.to_i, time_left: time_left }, ex: time_left, nx: true
+    storage.set session_key, { paused: 0, started_at: Time.now.to_i, time_left: time_left }, ex: time_left, nx: true
     Dnd::SendBusyMessageWorker.perform_async(user_id)
     Dnd::SetSnoozeWorker.perform_async(user_id, time.to_i)
     PomodoroSessionUpdateResult.ok
   end
 
   def stop_pomodoro
-    storage.del busy_key
+    storage.del session_key
     Dnd::EndSnoozeWorker.perform_async(user_id)
     PomodoroSessionUpdateResult.ok
   end
 
   def pause_pomodoro
-    current_state = storage.get busy_key
-
-    unless current_state
+    unless session_exists?
       return PomodoroSessionUpdateResult.error('no pomodoro session')
     end
 
-    if current_state.fetch('paused') == 1
+    if session_paused?
       return PomodoroSessionUpdateResult.error('pomodoro session already paused')
     end
 
-    started   = current_state.fetch('started_at').to_i
+    session      = session()
+    started      = session.fetch('started_at').to_i
     elapsed_time = Time.now.to_i - started
-    time_left = current_state.fetch('time_left').to_i - elapsed_time
+    time_left    = session.fetch('time_left').to_i - elapsed_time
 
-    state = current_state.merge('paused' => 1, 'time_left' => time_left)
+    state = session.merge('paused' => 1, 'time_left' => time_left)
 
-    storage.set busy_key, state
+    storage.set session_key, state
     Dnd::EndSnoozeWorker.perform_async(user_id)
     PomodoroSessionUpdateResult.ok
   end
 
+  def session_paused?
+    session.fetch('paused') == 1
+  end
+
+  def session
+    storage.get session_key
+  end
+
+  def session_exists?
+    !!session
+  end
+
   def unpause_pomodoro
-    current_state = storage.get busy_key
+    current_state = session
     return PomodoroSessionUpdateResult.error('no pomodoro session') unless current_state
     return PomodoroSessionUpdateResult.error('pomodoro session not paused') if current_state.fetch('paused') == 0
 
     time_left = current_state.fetch('time_left').to_i
     state     = current_state.merge('started_at' => Time.now.to_i, 'paused' => 0)
-    storage.set busy_key, state, ex: time_left
+    storage.set session_key, state, ex: time_left
     Dnd::SetSnoozeWorker.perform_async(user_id, (time_left / 60))
     PomodoroSessionUpdateResult.ok
   end
@@ -76,12 +83,12 @@ class User
 
   attr_reader :user_id
 
-  def busy_key
-    "busy:user:#{user_id}"
+  def session_key
+    "user:session:#{user_id}"
   end
 
   def user_key
-    "user:#{user_id}"
+    "user:id:#{user_id}"
   end
 
   def storage

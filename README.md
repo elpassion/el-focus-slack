@@ -9,3 +9,7 @@
   - Enter the same command twice 
   - Start - Pause - Start (instead of Unpause)
 - Rounding time values
+
+# Development
+
+bundle exec sidekiq -r ./dnd_worker.rb
