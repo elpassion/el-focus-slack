@@ -1,8 +1,6 @@
 require_relative 'config/initialize'
 
 module Dnd
-  
-
   class SendBusyMessagesWorker
     include Sidekiq::Worker
     sidekiq_options retry: false
@@ -15,19 +13,8 @@ module Dnd
 
       ims(client).each do |channel|
         channel_id = channel.id
-        channel_user = channel.user
-
-        puts "Downloading for [#{channel_id}]..."
-        history = client.im_history(channel: channel_id, count: 1, unreads: 1)
-        next if history.messages.empty?
-        last_message = history.messages.last
-        last_message_user = last_message.user
-        # post_message if unread pending and last_message_user is_interlocutor?
-        if history.unread_count_display > 0 && last_message_user == channel_user
-          puts "sending message to channel #{channel_id}, user: #{last_message_user}"
-          message = "Sorry, I'm busy right now. I'll be back in #{user.session_time_left / 60} minutes."
-          client.chat_postMessage(channel: channel_id, text: message, as_user: true)
-        end
+        interlocutor_id = channel.user
+        SetBusyMessageToChannelWorker.perform_async(user_id, channel_id, interlocutor_id)
       end
 
       puts 'scheduling next in 20 seconds'
@@ -39,7 +26,26 @@ module Dnd
     def ims(client)
       client.im_list.ims
     end
+  end
 
+  class SetBusyMessageToChannelWorker
+    include Sidekiq::Worker
+    sidekiq_options retry: false
+
+    def perform(user_id, channel_id, interlocutor_id)
+      user = User.new(user_id)
+      client = SlackClient.for_acces_token(user.access_token)
+      channel_history = client.im_history(channel: channel_id, count: 1, unreads: 1)
+      return if channel_history.messages.empty?
+
+      last_message_author_id = channel_history.messages.last.user
+      unread_messages = channel_history.unread_count_display > 0
+      if unread_messages && last_message_author_id == interlocutor_id
+        puts "sending message to channel=#{channel_id}, interlocutor_id=#{interlocutor_id}"
+        message = "Sorry, I'm busy right now. I'll be back in #{user.session_time_left / 60} minutes."
+        client.chat_postMessage(channel: channel_id, text: message, as_user: true)
+      end
+    end
   end
 
   class SetSnoozeWorker
