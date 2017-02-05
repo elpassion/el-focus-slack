@@ -1,15 +1,15 @@
 # TODO
 
-- What should happen when user sends *busy* command more than once?
-- How to send message about finished pomodoro
-- Prevent jobs from duplication
-- Send API calls in parallel
-- Check limits
-- Edge cases
-  - Enter the same command twice 
-  - Start - Pause - Start (instead of Unpause)
+- Send message about finished session.
+- Prevent jobs from duplication. Check how many jobs are running for single user after following scenarios:
+  - Start - Pause - Start
+  - Start - Stop - Start
+  - Start - Start
+- Check Slack API limits
 - Rounding time values
+- Extract Session abstraction layer.
 
 # Development
 
+rackup
 bundle exec sidekiq -r ./dnd_worker.rb
