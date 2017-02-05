@@ -46,7 +46,7 @@ class Events
     return unless user_id # we don't react to messages sent by bot
     user = User.new(user_id)
 
-    match_data = /\Apomodoro (?<command>start|pause|unpause|stop)(\s(?<time>\d+))?\z/.match(event_data['text'])
+    match_data = /\A(?<command>start|pause|unpause|stop)(\s(?<time>\d+))?\z/.match(event_data['text'])
     return unless match_data
     time_param = match_data['time']
 
@@ -69,19 +69,19 @@ class Events
   end
 
   def self.unpause_pomodoro(user)
-    message_or_error(user.unpause_pomodoro, 'pomodoro session unpaused')
+    message_or_error(user.unpause_session, 'session unpaused')
   end
 
   def self.stop_pomodoro(user)
-    message_or_error(user.stop_pomodoro, 'pomodoro session stopped')
+    message_or_error(user.stop_session, 'session stopped')
   end
 
   def self.pause_pomodoro(user)
-    message_or_error(user.pause_pomodoro, 'pomodoro session paused')
+    message_or_error(user.pause_session, 'session paused')
   end
 
   def self.start_pomodoro(time_param, user)
-    message_or_error(user.start_pomodoro(time_param), 'pomodoro session started')
+    message_or_error(user.start_session(time_param), "session started (#{time_param || User::DEFAULT_SESSION_TIME} minutes)")
   end
 
   def self.client(access_token)

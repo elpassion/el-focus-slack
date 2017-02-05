@@ -3,7 +3,7 @@ require_relative 'config/initialize'
 module Dnd
   
 
-  class SendBusyMessageWorker
+  class SendBusyMessagesWorker
     include Sidekiq::Worker
     sidekiq_options retry: false
 
@@ -25,7 +25,8 @@ module Dnd
         # post_message if unread pending and last_message_user is_interlocutor?
         if history.unread_count_display > 0 && last_message_user == channel_user
           puts "sending message to channel #{channel_id}, user: #{last_message_user}"
-          client.chat_postMessage(channel: channel_id, text: "Sorry, I'm busy right now ;(", as_user: true)
+          message = "Sorry, I'm busy right now. I'll be back in #{user.session_time_left / 60} minutes."
+          client.chat_postMessage(channel: channel_id, text: message, as_user: true)
         end
       end
 
