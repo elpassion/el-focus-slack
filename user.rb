@@ -20,6 +20,7 @@ class User
   end
 
   def start_pomodoro(time)
+    return if session_exists?
     time ||= DEFAULT_POMODORO_TIME
     time_left = time.to_i * 60
     storage.set session_key, { paused: 0, started_at: Time.now.to_i, time_left: time_left }, ex: time_left, nx: true
