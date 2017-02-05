@@ -5,6 +5,7 @@ class Storage
 
   def get(key)
     json = redis.get(key)
+    return nil if json.nil?
     JSON.parse(json)
   end
 
