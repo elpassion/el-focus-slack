@@ -19,23 +19,12 @@ class User
     storage.get(user_key).fetch('access_token')
   end
 
-  def start_session(time)
-    if session_paused?
-      return unpause_session
-    end
-
-    time ||= DEFAULT_SESSION_TIME
-    time_left = time.to_i * 60
-    storage.set session_key, { paused: 0, started_at: Time.now.to_i, time_left: time_left }, ex: time_left, nx: true
-    Dnd::SendBusyMessagesWorker.perform_async(user_id)
-    Dnd::SetSnoozeWorker.perform_async(user_id, time.to_i)
-    SessionUpdateResult.ok
+  def decrement_send_busy_messages_jobs_count
+    storage.set(send_busy_messages_jobs_count_key, scheduled_send_busy_messages_jobs_count - 1)
   end
 
-  def stop_session
-    storage.del session_key
-    Dnd::EndSnoozeWorker.perform_async(user_id)
-    SessionUpdateResult.ok
+  def increment_send_busy_messages_jobs_count
+    storage.set(send_busy_messages_jobs_count_key, scheduled_send_busy_messages_jobs_count + 1)
   end
 
   def pause_session
@@ -54,12 +43,54 @@ class User
     SessionUpdateResult.ok
   end
 
+  def scheduled_send_busy_messages_jobs_count
+    count = storage.get(send_busy_messages_jobs_count_key)
+    if count
+      return count.to_i
+    else
+      0
+    end
+  end
+
+  def start_session(time)
+    if session_in_progress?
+      return SessionUpdateResult.error("Session already in progress (time left: #{session_time_left / 60} minutes)")
+    end
+
+    if session_paused?
+      return unpause_session
+    end
+
+    time ||= DEFAULT_SESSION_TIME
+    time_left = time.to_i * 60
+    storage.set session_key, { paused: 0, started_at: Time.now.to_i, time_left: time_left }, ex: time_left, nx: true
+    Dnd::SendBusyMessagesWorker.perform_async(user_id)
+    increment_send_busy_messages_jobs_count
+    Dnd::SetSnoozeWorker.perform_async(user_id, time.to_i)
+    SessionUpdateResult.ok
+  end
+
+  def stop_session
+    storage.del session_key
+    storage.del send_busy_messages_jobs_count_key
+    Dnd::EndSnoozeWorker.perform_async(user_id)
+    SessionUpdateResult.ok
+  end
+
+  def send_busy_messages_jobs_count_key
+    "user:busy_messages_jobs_count:#{user_id}"
+  end
+
   def session
     storage.get session_key
   end
 
   def session_exists?
     !!session
+  end
+
+  def session_in_progress?
+    session_exists? && session.fetch('paused') == 0
   end
 
   def session_paused?
@@ -93,7 +124,7 @@ class User
   end
 
   def user_key
-    "user:id:#{user_id}"
+    "user:#{user_id}"
   end
 
   def storage

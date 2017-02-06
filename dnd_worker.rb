@@ -8,17 +8,23 @@ module Dnd
     def perform(user_id)
       user = User.new(user_id)
       return unless user.session_exists?
-
-      client = SlackClient.for_acces_token(user.access_token)
-
-      ims(client).each do |channel|
-        channel_id = channel.id
-        interlocutor_id = channel.user
-        SetBusyMessageToChannelWorker.perform_async(user_id, channel_id, interlocutor_id)
+      user.decrement_send_busy_messages_jobs_count
+      if user.scheduled_send_busy_messages_jobs_count > 0
+        return
       end
 
-      puts 'scheduling next in 20 seconds'
+      unless user.session_paused?
+        client = SlackClient.for_acces_token(user.access_token)
+
+        ims(client).each do |channel|
+          channel_id = channel.id
+          interlocutor_id = channel.user
+          SetBusyMessageToChannelWorker.perform_async(user_id, channel_id, interlocutor_id)
+        end
+      end
+
       self.class.perform_in 20, user_id
+      user.increment_send_busy_messages_jobs_count
     end
 
     private
@@ -40,7 +46,7 @@ module Dnd
 
       last_message_author_id = channel_history.messages.last.user
       unread_messages = channel_history.unread_count_display > 0
-      if unread_messages && last_message_author_id == interlocutor_id
+      if unread_messages && last_message_author_id == interlocutor_id && interlocutor_id != 'USLACKBOT'
         puts "sending message to channel=#{channel_id}, interlocutor_id=#{interlocutor_id}"
         message = "Sorry, I'm busy right now. I'll be back in #{user.session_time_left / 60} minutes."
         client.chat_postMessage(channel: channel_id, text: message, as_user: true)
