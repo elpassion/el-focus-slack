@@ -16,10 +16,10 @@ module Dnd
       unless user.session_paused?
         client = SlackClient.for_acces_token(user.access_token)
 
-        ims(client).each do |channel|
+        channels(client).each do |channel|
           channel_id = channel.id
           interlocutor_id = channel.user
-          SetBusyMessageToChannelWorker.perform_async(user_id, channel_id, interlocutor_id)
+          SendBusyMessageToChannelWorker.perform_async(user_id, channel_id, interlocutor_id)
         end
       end
 
@@ -29,12 +29,12 @@ module Dnd
 
     private
 
-    def ims(client)
+    def channels(client)
       client.im_list.ims
     end
   end
 
-  class SetBusyMessageToChannelWorker
+  class SendBusyMessageToChannelWorker
     include Sidekiq::Worker
     sidekiq_options retry: false
 
