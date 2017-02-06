@@ -1,6 +1,12 @@
 class User
   DEFAULT_SESSION_TIME = 25
 
+  def self.create(access_token:, user_id:)
+    user = new(user_id)
+    user.access_token = access_token
+    user
+  end
+
   def self.storage
     @storage ||= Storage.new
   end

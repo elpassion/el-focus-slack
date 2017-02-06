@@ -6,3 +6,9 @@ gem 'slack-ruby-client', '~> 0.7.7'
 gem 'dotenv', :groups => [:development, :test]
 gem 'redis'
 gem 'sidekiq'
+
+group :test do
+  gem 'fakeredis'
+  gem 'rspec'
+  gem 'webmock'
+end

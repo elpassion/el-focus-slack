@@ -24,8 +24,7 @@ class Auth < Sinatra::Base
 
       user_id      = response['user_id']
       access_token = response['access_token']
-      user         = User.new(user_id)
-      user.access_token = access_token
+      User.create(access_token: access_token, user_id: user_id)
 
       $storage.set "bot:#{response['team_id']}", {
         access_token: response['bot']['bot_access_token'],
