@@ -20,7 +20,10 @@ class User
   end
 
   def start_session(time)
-    return if session_exists?
+    if session_paused?
+      return unpause_session
+    end
+
     time ||= DEFAULT_SESSION_TIME
     time_left = time.to_i * 60
     storage.set session_key, { paused: 0, started_at: Time.now.to_i, time_left: time_left }, ex: time_left, nx: true
@@ -60,7 +63,7 @@ class User
   end
 
   def session_paused?
-    session.fetch('paused') == 1
+    session_exists? && session.fetch('paused') == 1
   end
 
   def session_time_left
