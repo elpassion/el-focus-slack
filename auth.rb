@@ -3,6 +3,8 @@ require_relative 'config/initialize'
 PERMISSION_SCOPE = 'bot+im:read+users:read+im:history+chat:write:user+dnd:write'
 
 class Auth < Sinatra::Base
+  set :views, settings.root + '/views'
+
   add_to_slack_button = %(
     <a href=\"https://slack.com/oauth/authorize?scope=#{PERMISSION_SCOPE}&client_id=#{SLACK_CONFIG[:client_id]}&redirect_uri=#{SLACK_CONFIG[:redirect_uri]}\">
       <img alt=\"Add to Slack\" height=\"40\" width=\"139\" src=\"https://platform.slack-edge.com/img/add_to_slack.png\"/>
@@ -10,12 +12,8 @@ class Auth < Sinatra::Base
   )
 
   get '/' do
-    redirect '/begin_auth'
-  end
-
-  get '/begin_auth' do
     status 200
-    body add_to_slack_button
+    erb :index
   end
 
   get '/finish_auth' do
@@ -35,7 +33,7 @@ class Auth < Sinatra::Base
       body 'Welcome to ElPomodoro Slack App :)'
     rescue Slack::Web::Api::Error => e
       status 403
-      body "Auth failed! Reason: #{e.message}<br/>#{add_to_slack_button}"
+      erb :index, locals: { error: "Auth failed! Reason: #{e.message}<br/>#{add_to_slack_button}" }
     end
   end
 end
