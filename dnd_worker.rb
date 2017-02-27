@@ -50,7 +50,7 @@ module Dnd
         puts "sending message to channel=#{channel_id}, interlocutor_id=#{interlocutor_id}"
         time_left = user.session_time_left / 60
         minutes_text = time_left > 1 ? 'minutes' : 'minute'
-        message = "Sorry, I'm busy right now. I'll be back in #{time_left} #{minutes_text}. [sent by El Pomodoro Slack App]"
+        message = "Sorry, I'm busy right now. I'll be back in #{time_left} #{minutes_text}. _sent by El Pomodoro Slack App_"
         client.chat_postMessage(channel: channel_id, text: message, as_user: true)
       end
     end
