@@ -21,6 +21,13 @@ if missing_params.any?
   raise "Missing Slack config variables: #{error_msg}"
 end
 
+Sidekiq.configure_server do |config|
+  config.redis = { url: ENV['REDISTOGO_URL'] }
+end
+Sidekiq.configure_client do |config|
+  config.redis = { url: ENV['REDISTOGO_URL'] }
+end
+
 require_relative '../storage'
 require_relative '../slack_client'
 require_relative '../user'
