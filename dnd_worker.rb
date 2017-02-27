@@ -1,7 +1,7 @@
 require_relative 'config/initialize'
 
 module Dnd
-  class SendBusyMessagesWorker
+  class RespondWithImBusyWorker
     include Sidekiq::Worker
     sidekiq_options retry: false
 
@@ -19,7 +19,7 @@ module Dnd
         channels(client).each do |channel|
           channel_id = channel.id
           interlocutor_id = channel.user
-          SendBusyMessageToChannelWorker.perform_async(user_id, channel_id, interlocutor_id)
+          SendImBusyMessageWorker.perform_async(user_id, channel_id, interlocutor_id)
         end
       end
 
@@ -34,7 +34,7 @@ module Dnd
     end
   end
 
-  class SendBusyMessageToChannelWorker
+  class SendImBusyMessageWorker
     include Sidekiq::Worker
     sidekiq_options retry: false
 

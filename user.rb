@@ -58,7 +58,7 @@ class User
     end
   end
 
-  def start_session(time)
+  def start_session(time = nil)
     if session_in_progress?
       return SessionUpdateResult.error("Session already in progress (time left: #{session_time_left / 60} minutes)")
     end
@@ -70,8 +70,8 @@ class User
     time ||= DEFAULT_SESSION_TIME
     time_left = time.to_i * 60
     storage.set session_key, { paused: 0, started_at: Time.now.to_i, time_left: time_left }, ex: time_left, nx: true
-    Dnd::SendBusyMessagesWorker.perform_async(user_id)
     increment_send_busy_messages_jobs_count
+    Dnd::RespondWithImBusyWorker.perform_async(user_id)
     Dnd::SetSnoozeWorker.perform_async(user_id, time.to_i)
     SessionUpdateResult.ok
   end
