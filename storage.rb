@@ -30,6 +30,7 @@ class Storage
   attr_reader :redis
 
   def get_client(redis_url)
+    puts "redis_url: #{redis_url}"
     Redis.new(url: redis_url)
   end
 end
