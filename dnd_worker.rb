@@ -48,7 +48,9 @@ module Dnd
       unread_messages = channel_history.unread_count_display > 0
       if unread_messages && last_message_author_id == interlocutor_id && interlocutor_id != 'USLACKBOT'
         puts "sending message to channel=#{channel_id}, interlocutor_id=#{interlocutor_id}"
-        message = "Sorry, I'm busy right now. I'll be back in #{user.session_time_left / 60} minutes."
+        time_left = user.session_time_left / 60
+        minutes_text = time_left > 1 ? 'minutes' : 'minute'
+        message = "Sorry, I'm busy right now. I'll be back in #{time_left} #{minutes_text}. [sent by El Pomodoro Slack App]"
         client.chat_postMessage(channel: channel_id, text: message, as_user: true)
       end
     end
