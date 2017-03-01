@@ -9,6 +9,10 @@ class API < Sinatra::Base
       halt 403, "Invalid Slack verification token received: #{request_data['token']}"
     end
 
+    puts "request_data['type']:"
+    pp request_data['type']
+    puts "request_data['event']:"
+    pp request_data['event']
     case request_data['type']
       # When you enter your Events webhook URL into your app's Event Subscription settings, Slack verifies the
       # URL's authenticity by sending a challenge token to your endpoint, expecting your app to echo it back.
