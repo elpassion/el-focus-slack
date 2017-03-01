@@ -1,4 +1,12 @@
 class API < Sinatra::Base
+  configure do
+    # logging is enabled by default in classic style applications,
+    # so `enable :logging` is not needed
+    file = File.new("#{settings.root}/log/#{settings.environment}.log", 'a+')
+    file.sync = true
+    use Rack::CommonLogger, file
+  end
+
   # This is the endpoint Slack will post Event data to.
   post '/events' do
     # Extract the Event payload from the request and parse the JSON
