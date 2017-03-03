@@ -79,7 +79,7 @@ class User
   end
 
   def stop_session
-    return unless session_exists?
+    return SessionUpdateResult.error('No session in progress') unless session_exists?
     storage.del session_key
     storage.del send_busy_messages_jobs_count_key
     Dnd::EndSnoozeWorker.perform_async(user_id)
@@ -114,8 +114,8 @@ class User
 
   def unpause_session
     current_state = session
-    return SessionUpdateResult.error('no session') unless current_state
-    return SessionUpdateResult.error('session not paused') if current_state.fetch('paused') == 0
+    return SessionUpdateResult.error('No session in progress') unless current_state
+    return SessionUpdateResult.error('No paused session') if current_state.fetch('paused') == 0
 
     time_left = current_state.fetch('time_left').to_i
     state     = current_state.merge('started_at' => Time.now.to_i, 'paused' => 0)
