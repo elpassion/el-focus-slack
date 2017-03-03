@@ -17,6 +17,10 @@ class API < Sinatra::Base
       halt 403, "Invalid Slack verification token received: #{request_data['token']}"
     end
 
+    puts "request.env['HTTP_X_SLACK_RETRY_NUM']: #{request.env['HTTP_X_SLACK_RETRY_NUM']}"
+    puts "request.env['X-Slack-Retry-Num']: #{request.env['X-Slack-Retry-Num']}"
+    puts "request.env['HTTP_X-Slack-Retry-Num']: #{request.env['HTTP_X-Slack-Retry-Num']}"
+
     puts "request_data['type']:"
     pp request_data['type']
     puts "request_data['event']:"
@@ -93,9 +97,6 @@ class Events
   end
 
   def self.start_pomodoro(time_param, user)
-    puts "start_pomodoro"
-    puts "time_param: #{time_param}"
-    puts "user: #{user}"
     message_or_error(user.start_session(time_param), "session started (#{time_param || User::DEFAULT_SESSION_TIME} minutes)")
   end
 

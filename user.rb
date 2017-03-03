@@ -59,8 +59,6 @@ class User
   end
 
   def start_session(time = nil)
-    puts "start_session"
-    puts "session: #{session}"
     if session_in_progress?
       return SessionUpdateResult.error("Session already in progress (time left: #{session_time_left / 60} minutes)")
     end
