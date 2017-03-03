@@ -77,6 +77,7 @@ class User
   end
 
   def stop_session
+    return unless session_exists?
     storage.del session_key
     storage.del send_busy_messages_jobs_count_key
     Dnd::EndSnoozeWorker.perform_async(user_id)
