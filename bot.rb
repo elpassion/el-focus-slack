@@ -93,6 +93,9 @@ class Events
   end
 
   def self.start_pomodoro(time_param, user)
+    puts "start_pomodoro"
+    puts "time_param: #{time_param}"
+    puts "user: #{user}"
     message_or_error(user.start_session(time_param), "session started (#{time_param || User::DEFAULT_SESSION_TIME} minutes)")
   end
 
