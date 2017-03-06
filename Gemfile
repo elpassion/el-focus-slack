@@ -6,7 +6,7 @@ gem 'slack-ruby-client', '~> 0.7.7'
 gem 'dotenv', :groups => [:development, :test]
 gem 'shotgun', :groups => [:development]
 gem 'redis'
-gem 'sidekiq'
+gem 'sidekiq', '~> 4.2.9'
 
 group :test do
   gem 'fakeredis'
