@@ -16,7 +16,9 @@ module Dnd
       unless user.session_paused?
         client = SlackClient.for_acces_token(user.access_token)
 
-        channels(client).each do |channel|
+        channels = channels(client)
+        puts "channels: #{channels}"
+        channels.each do |channel|
           channel_id = channel.id
           interlocutor_id = channel.user
           SendImBusyMessageWorker.perform_async(user_id, channel_id, interlocutor_id)
