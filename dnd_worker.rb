@@ -10,6 +10,8 @@ module Dnd
       return unless user.session_exists?
       user.decrement_send_busy_messages_jobs_count
       if user.scheduled_send_busy_messages_jobs_count > 0
+        puts "RETURN!"
+        puts "user.scheduled_send_busy_messages_jobs_count: #{user.scheduled_send_busy_messages_jobs_count}"
         return
       end
 
