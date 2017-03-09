@@ -7,6 +7,7 @@ gem 'dotenv', :groups => [:development, :test]
 gem 'shotgun', :groups => [:development]
 gem 'redis'
 gem 'sidekiq', '~> 4.2.9'
+gem 'puma'
 
 group :test do
   gem 'fakeredis'
