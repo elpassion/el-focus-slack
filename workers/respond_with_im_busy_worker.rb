@@ -4,8 +4,8 @@ class Workers::RespondWithImBusyWorker
 
   def perform(user_id)
     user = User.new(user_id)
-    return unless user.session_exists?
     user.decrement_send_busy_messages_jobs_count
+    return unless user.session_exists?
     if user.scheduled_send_busy_messages_jobs_count > 0
       puts "RETURNING:"
       puts "user.scheduled_send_busy_messages_jobs_count: #{user.scheduled_send_busy_messages_jobs_count}"
