@@ -42,6 +42,10 @@ describe User do
         expect { instance.start_session }.to change { set_snooze_jobs_count.call }.from(0).to(1)
       end
 
+      it 'should create session' do
+        expect { instance.start_session }.to change { instance.session.nil? }.from(true).to(false)
+      end
+
       context 'when called twice' do
         it 'should schedule RespondWithImBusyWorker job only once' do
           expect { 2.times { instance.start_session } }.to change { respond_with_im_busy_jobs_count.call }.from(0).to(1)
@@ -49,6 +53,11 @@ describe User do
 
         it 'should schedule SetSnooze job only once' do
           expect { 2.times { instance.start_session } }.to change { set_snooze_jobs_count.call }.from(0).to(1)
+        end
+
+        it 'should not change session' do
+          instance.start_session
+          expect { instance.start_session }.to_not change { instance.session }
         end
       end
 
@@ -63,7 +72,7 @@ describe User do
         end
 
         it 'should schedule SetSnooze job' do
-          expect { instance.start_session }.to change { set_snooze_jobs_count.call }.from(1).to(2) # instance.start_session in before schedules the first SetSnooze, hence from(1), not from(0)
+          expect { instance.start_session }.to change { set_snooze_jobs_count.call }.from(1).to(2) # we don't clear jobs, so we must use #from(1) instead of #from(0) (first job is scheduled in before block)
         end
 
         it 'should unpause session' do
@@ -78,11 +87,15 @@ describe User do
         end
 
         it 'should schedule RespondWithImBusyWorker job' do
-          expect { instance.start_session }.to change { respond_with_im_busy_jobs_count.call }.from(1).to(2)
+          expect { instance.start_session }.to change { respond_with_im_busy_jobs_count.call }.from(1).to(2) # we don't clear jobs, so we must use #from(1) instead of #from(0) (first job is scheduled in before block)
         end
 
         it 'should schedule SetSnooze job' do
-          expect { instance.start_session }.to change { set_snooze_jobs_count.call }.from(1).to(2)
+          expect { instance.start_session }.to change { set_snooze_jobs_count.call }.from(1).to(2) # we don't clear jobs, so we must use #from(1) instead of #from(0) (first job is scheduled in before block)
+        end
+
+        it 'should create session' do
+          expect { instance.start_session }.to change { instance.session.nil? }.from(true).to(false)
         end
       end
     end
@@ -97,9 +110,18 @@ describe User do
           expect { instance.pause_session }.to change { end_snooze_jobs_count.call }.from(0).to(1)
         end
 
+        it 'should pause session' do
+          expect { instance.pause_session }.to change { instance.session_paused? }.from(false).to(true)
+        end
+
         context 'when called twice' do
           it 'should schedule SetSnooze job only once' do
             expect { 2.times { instance.pause_session } }.to change { end_snooze_jobs_count.call }.from(0).to(1)
+          end
+
+          it 'should not unpause session' do
+            instance.pause_session
+            expect { instance.pause_session }.to_not change { instance.session }
           end
         end
       end
@@ -107,6 +129,38 @@ describe User do
       context 'when there is no session' do
         it 'should not schedule any job' do
           expect { instance.pause_session }.to_not change { Sidekiq::Worker.jobs.count }.from(0)
+        end
+
+        it 'should not create session' do
+          expect { instance.pause_session }.to_not change { instance.session.nil? }.from(true)
+        end
+      end
+    end
+
+    describe '#stop_session' do
+      let(:end_snooze_jobs_count) { -> { Workers::EndSnoozeWorker.jobs.size } }
+
+      context 'when there is session' do
+        before { instance.start_session }
+
+        it 'should schedule EndSnooze job' do
+          expect { instance.stop_session }.to change { end_snooze_jobs_count.call }.from(0).to(1)
+        end
+
+        it 'should remove session' do
+          expect { instance.stop_session }.to change { instance.session.nil? }.from(false).to(true)
+        end
+
+        context 'when called twice' do
+          it 'should schedule EndSnooze job only once' do
+            expect { 2.times { instance.stop_session } }.to change { end_snooze_jobs_count.call }.from(0).to(1)
+          end
+        end
+      end
+
+      context 'when there is no session' do
+        it 'should not schedule any job' do
+          expect { instance.stop_session }.to_not change { Sidekiq::Worker.jobs.count }.from(0)
         end
       end
     end
