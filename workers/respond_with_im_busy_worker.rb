@@ -19,7 +19,7 @@ class Workers::RespondWithImBusyWorker
       channels.each do |channel|
         channel_id = channel.id
         interlocutor_id = channel.user
-        SendImBusyMessageWorker.perform_async(user_id, channel_id, interlocutor_id)
+        Workers::SendImBusyMessageWorker.perform_async(user_id, channel_id, interlocutor_id)
       end
     end
 
