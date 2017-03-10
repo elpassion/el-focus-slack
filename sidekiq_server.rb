@@ -1,5 +1,5 @@
 require_relative 'config/initialize'
-require_relative 'dnd_worker'
+require_relative 'workers'
 
 class SidekiqServer < Sinatra::Base
 end

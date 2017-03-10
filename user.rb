@@ -1,4 +1,6 @@
 class User
+  require_relative 'workers'
+
   DEFAULT_SESSION_TIME = 25
 
   def self.create(access_token:, user_id:)
@@ -45,7 +47,7 @@ class User
     state = session.merge('paused' => 1, 'time_left' => session_time_left)
 
     storage.set session_key, state
-    Dnd::EndSnoozeWorker.perform_async(user_id)
+    Workers::EndSnoozeWorker.perform_async(user_id)
     SessionUpdateResult.ok
   end
 
@@ -71,8 +73,8 @@ class User
     time_left = time.to_i * 60
     storage.set session_key, { paused: 0, started_at: Time.now.to_i, time_left: time_left }, ex: time_left, nx: true
     increment_send_busy_messages_jobs_count
-    Dnd::RespondWithImBusyWorker.perform_async(user_id)
-    Dnd::SetSnoozeWorker.perform_async(user_id, time.to_i)
+    Workers::RespondWithImBusyWorker.perform_async(user_id)
+    Workers::SetSnoozeWorker.perform_async(user_id, time.to_i)
     SessionUpdateResult.ok
   end
 
@@ -80,7 +82,7 @@ class User
     return SessionUpdateResult.error('No session in progress') unless session_exists?
     storage.del session_key
     storage.del send_busy_messages_jobs_count_key
-    Dnd::EndSnoozeWorker.perform_async(user_id)
+    Workers::EndSnoozeWorker.perform_async(user_id)
     SessionUpdateResult.ok
   end
 
@@ -118,7 +120,7 @@ class User
     time_left = current_state.fetch('time_left').to_i
     state     = current_state.merge('started_at' => Time.now.to_i, 'paused' => 0)
     storage.set session_key, state, ex: time_left
-    Dnd::SetSnoozeWorker.perform_async(user_id, (time_left / 60))
+    Workers::SetSnoozeWorker.perform_async(user_id, (time_left / 60))
     SessionUpdateResult.ok
   end
 

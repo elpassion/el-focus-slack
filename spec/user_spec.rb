@@ -1,5 +1,5 @@
 require_relative 'spec_helper'
-require_relative '../dnd_worker'
+require_relative '../workers'
 
 describe User do
   let(:access_token) { 'some-access-token' }
@@ -30,9 +30,9 @@ describe User do
     let(:interlocutor_2_id) { 'INTERLOCUTOR#2' }
 
     describe '#start_session' do
-      let(:respond_with_im_busy_jobs_count) { -> { Dnd::RespondWithImBusyWorker.jobs.size } }
-      let(:set_snooze_jobs_count) { -> { Dnd::SetSnoozeWorker.jobs.size } }
-      let(:end_snooze_jobs_count) { -> { Dnd::EndSnoozeWorker.jobs.size } }
+      let(:respond_with_im_busy_jobs_count) { -> { Workers::RespondWithImBusyWorker.jobs.size } }
+      let(:set_snooze_jobs_count) { -> { Workers::SetSnoozeWorker.jobs.size } }
+      let(:end_snooze_jobs_count) { -> { Workers::EndSnoozeWorker.jobs.size } }
 
       it 'should schedule RespondWithImBusyWorker job' do
         expect { instance.start_session }.to change { respond_with_im_busy_jobs_count.call }.from(0).to(1)
@@ -88,7 +88,7 @@ describe User do
     end
 
     describe '#pause_session' do
-      let(:end_snooze_jobs_count) { -> { Dnd::EndSnoozeWorker.jobs.size } }
+      let(:end_snooze_jobs_count) { -> { Workers::EndSnoozeWorker.jobs.size } }
 
       context 'when there is session' do
         before { instance.start_session }

@@ -45,8 +45,6 @@ class API < Sinatra::Base
 end
 
 class Events
-  require_relative './dnd_worker'
-
   def self.message(team_id, event_data)
     user_id = event_data['user']
     return unless user_id # we don't react to messages sent by bot
