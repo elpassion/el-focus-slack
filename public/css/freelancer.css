@@ -57,6 +57,10 @@ header .intro-text .name {
     font-weight: 700;
     font-size: 2em;
 }
+header .intro-text .name sub {
+    font-size: 0.2em;
+    font-weight: normal;
+}
 header .intro-text .skills {
     font-size: 1.25em;
     font-weight: 300;
