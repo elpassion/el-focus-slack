@@ -1,10 +1,11 @@
-# TODO
+# El Pomodoro Slack
 
-- Send message about finished session.
-- User has unread messages. Then user starts session. Should it send busy messages to interlocutors?
-- Rounding time values
-- Extract Session abstraction layer.
+## Development
 
-# Development
+```bash
+gem install foreman
+foreman start
+```
 
-See Procfile
+Foreman will start two processes: web server and sidekiq worker.
+See [`Procfile`](https://github.com/elpassion/el-pomodoro-slack/blob/master/Procfile) for more details.
