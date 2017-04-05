@@ -1,7 +1,7 @@
 <section>
   <div class="usage">
     <div class="row">
-      <div class="col-lg-4 col-lg-offset-4">
+      <div class="col-lg-6 col-lg-offset-3">
         <p>1. <a href="https://slack.com/oauth/authorize?scope=bot+im:read+users:read+im:history+chat:write:user+dnd:write&client_id=<%=SLACK_CONFIG[:client_id]%>&redirect_uri=<%=SLACK_CONFIG[:redirect_uri]%>">
           <img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" style="position: relative; top: -3px"/>
         </a></p>
@@ -15,8 +15,8 @@
     <%= erb(:_commands) %>
     <br />
     <div class="row">
-      <div class="col-lg-4 col-lg-offset-4">
-        <p> Automatic response will be sent to a person who messages you during session. </p>
+      <div class="col-lg-6 col-lg-offset-3">
+        <p> Automatic response will be sent to a person<br />who messages you during session. </p>
         <p> During session your notifications are snoozed. </p>
       </div>
     </div>
