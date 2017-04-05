@@ -9,6 +9,8 @@ gem 'redis'
 gem 'sidekiq', '~> 4.2.9'
 gem 'puma'
 
+gem 'byebug'
+
 group :test do
   gem 'fakeredis'
   gem 'rspec'
