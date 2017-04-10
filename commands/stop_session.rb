@@ -7,8 +7,14 @@ class Commands
     end
 
     def call
-      respond_with 'session stopped' do
-        user.stop_session
+      respond_with('session stopped') { stop_session }
+    end
+
+    private
+
+    def stop_session
+      user.stop_session.ok do
+        Workers::EndSnoozeWorker.perform_async(user.user_id)
       end
     end
   end

@@ -44,14 +44,10 @@ describe Commands::StartSession do
 
     before do
       allow(conversation).to receive(:post_message)
-      allow(user).to receive(:start_session).and_return(result)
     end
 
     it 'should start session' do
-      expect(user)
-        .to receive(:start_session)
-              .with(nil)
-              .and_return(result)
+      expect(user).to receive(:start_session).and_call_original
 
       subject.call
     end
@@ -62,6 +58,16 @@ describe Commands::StartSession do
       subject.call
     end
 
+    it 'should schedule SetSnooze job' do
+      expect { subject.call }
+        .to change(Workers::SetSnoozeWorker.jobs, :size).by(1)
+    end
+
+    it 'should schedule RespondWithImBusyWorker job' do
+      expect { subject.call }
+        .to change(Workers::RespondWithImBusyWorker.jobs, :size).by(1)
+    end
+
     context 'with time' do
       let(:time) { 5 }
 
@@ -69,10 +75,23 @@ describe Commands::StartSession do
         expect(user)
           .to receive(:start_session)
                 .with(5)
-                .and_return(result)
+                .and_call_original
 
         subject.call
       end
     end
+
+    context 'when called twice' do
+      it 'should schedule SetSnooze job once' do
+        expect { 2.times { subject.call } }
+          .to change(Workers::SetSnoozeWorker.jobs, :size).by(1)
+      end
+
+      it 'should schedule RespondWithImBusyWorker job once' do
+        expect { 2.times { subject.call } }
+          .to change(Workers::RespondWithImBusyWorker.jobs, :size).by(1)
+      end
+    end
+
   end
 end

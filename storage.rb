@@ -25,6 +25,10 @@ class Storage
     redis.set(key, JSON.generate(data), args)
   end
 
+  def clear
+    redis.flushall
+  end
+
   private
 
   attr_reader :redis

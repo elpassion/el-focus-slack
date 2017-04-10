@@ -7,8 +7,14 @@ class Commands
     end
 
     def call
-      respond_with 'session unpaused' do
-        user.unpause_session
+      respond_with('session unpaused') { unpause_session }
+    end
+
+    private
+
+    def unpause_session
+      user.unpause_session.ok do
+        Workers::SetSnoozeWorker.perform_async(user.user_id, (user.session_time_left / 60))
       end
     end
   end

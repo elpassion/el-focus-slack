@@ -10,8 +10,14 @@ require 'webmock'
 require_relative '../config/initialize'
 
 RSpec.configure do |config|
-  config.after(:each) do
-    Redis.new.flushall
+  storage = Storage.new
+
+  config.before(:suite) do
+    User.storage = storage
+  end
+
+  config.before(:each) do
+    storage.clear
     Sidekiq::Worker.clear_all
   end
 end

@@ -1,10 +1,6 @@
 require_relative '../../user'
 
-shared_examples 'a command' do |message, stub_user_method|
-  let(:command) { described_class.new(conversation, user) }
-  let(:user) { User.create(access_token: 'access-token', user_id: 'test-user-id') }
-  let(:conversation) { instance_double('Conversation') }
-
+shared_examples 'a command' do |message|
   describe '.try_build' do
     context "with #{message} message" do
       it 'should build command' do
@@ -22,19 +18,6 @@ shared_examples 'a command' do |message, stub_user_method|
   end
 
   describe '#call' do
-    let(:result) { User::SessionUpdateResult.ok }
-
-    before do
-      allow(conversation).to receive(:post_message)
-      allow(user).to receive(stub_user_method).and_return(result)
-    end
-
-    it "should call #{stub_user_method} on user" do
-      expect(user).to receive(stub_user_method).and_return(result)
-
-      command.call
-    end
-
     it 'should respond back' do
       expect(conversation).to receive(:post_message)
 
