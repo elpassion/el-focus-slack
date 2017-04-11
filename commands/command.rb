@@ -15,10 +15,7 @@ class Commands
     attr_reader :bot_conversation, :user, :params
 
     def respond_with(message)
-      result = if block_given?
-                 yield
-               end
-
+      result = yield if block_given?
       bot_conversation.post_message message_or_error(result, message)
     end
 

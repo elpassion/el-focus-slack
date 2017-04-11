@@ -7,7 +7,7 @@ class Commands
     end
 
     def call
-      respond_with('session stopped') { stop_session }
+      respond_with('stopping session') { stop_session }
     end
 
     private
