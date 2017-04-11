@@ -1,7 +1,12 @@
 class Commands
   class UnpauseSession < Command
     def self.try_build(message, bot_conversation, user)
-      return unless /\Aunpause\z/ =~ message
+      matcher = if user.session_paused?
+                  /\Aunpause|start\z/
+                else
+                  /\Aunpause\z/
+                end
+      return unless matcher =~ message
 
       new(bot_conversation, user)
     end

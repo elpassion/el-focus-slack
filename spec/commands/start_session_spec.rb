@@ -30,6 +30,18 @@ describe Commands::StartSession do
             .to be_nil
         end
       end
+
+      context 'when session paused' do
+        before do
+          user.start_session
+          user.pause_session
+        end
+
+        it 'should not build' do
+          expect(described_class.try_build('start', conversation, user))
+            .to be_nil
+        end
+      end
     end
 
 

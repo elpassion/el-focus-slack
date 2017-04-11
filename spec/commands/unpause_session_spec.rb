@@ -18,6 +18,20 @@ describe Commands::UnpauseSession do
     let(:command) { subject }
   end
 
+  describe '.try_build' do
+    context 'when message is start and session is paused' do
+      before do
+        user.start_session
+        user.pause_session
+      end
+
+      it 'should build command' do
+        expect(described_class.try_build('start', conversation, user))
+          .to be_an_instance_of(described_class)
+      end
+    end
+  end
+
   describe '#call' do
     it "should unpause session" do
       expect(user).to receive(:unpause_session).and_call_original

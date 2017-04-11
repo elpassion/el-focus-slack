@@ -1,6 +1,7 @@
 class Commands
   class StartSession < Command
     def self.try_build(message, bot_conversation, user)
+      return if user.session_paused?
       match_data = /\Astart(\s(?<time>\d+))?\z/.match(message)
       return unless match_data
 
