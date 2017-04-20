@@ -1,2 +1,5 @@
 .env
 dump.rdb
+.byebug_history
+.rspec
+.ruby-gemset
