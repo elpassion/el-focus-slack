@@ -12,14 +12,7 @@ class User
   end
 
   def self.storage
-    if @storage
-      puts "Connection already exists, no need to create new one."
-      @storage
-    else
-      puts "Initializing new connection."
-      puts "Should we? Maybe we can use global connection? #{!!$storage}"
-      Storage.new
-    end
+    $storage
   end
 
   def self.storage=(storage)
