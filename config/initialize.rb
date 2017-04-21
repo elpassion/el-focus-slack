@@ -37,7 +37,7 @@ Sidekiq.configure_server do |config|
   sidekiq_calculations = SidekiqCalculations.new
   sidekiq_calculations.raise_error_for_env!
 
-  puts "Starting sidekiq with concurrency: #{sidekiq_calculations.server_concurrency_size}"
+  puts "Starting sidekiq server with concurrency: #{sidekiq_calculations.server_concurrency_size}"
   config.options[:concurrency] = sidekiq_calculations.server_concurrency_size
   config.redis = {
     url: ENV['REDISTOGO_URL']

@@ -14,6 +14,12 @@ class Commands
 
     private
 
+    def log_connections_count
+      Sidekiq.redis do |connection|
+        puts "Connected clients: #{connection.info['connected_clients']}"
+      end
+    end
+
     def start_session
       user.start_session(time).ok do
         Workers::Scheduler.perform_async(
@@ -22,6 +28,7 @@ class Commands
           bot_conversation_channel: bot_conversation.channel
         )
         Workers::SetSnoozeWorker.perform_async(user.user_id, (user.session_time_left / 60.0).ceil)
+        log_connections_count
       end
     end
 
