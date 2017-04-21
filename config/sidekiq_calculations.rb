@@ -32,29 +32,24 @@ Sidekiq Server Configuration failed.
 
   private
   def web_dynos
-    1
-    # Integer(ENV.fetch('NUMBER_OF_WEB_DYNOS'))
+    Integer(ENV.fetch('NUMBER_OF_WEB_DYNOS', 1))
   end
 
   def worker_dynos
-    1
-    # Integer(ENV.fetch('NUMBER_OF_WORKER_DYNOS'))
+    Integer(ENV.fetch('NUMBER_OF_WORKER_DYNOS', 1))
   end
 
   def max_redis_connection
-    50
-    # Integer(ENV.fetch('MAX_REDIS_CONNECTION'))
+    Integer(ENV.fetch('MAX_REDIS_CONNECTION', 50))
   end
 
   # ENV used in `config/puma.rb` too.
   def puma_workers
-    2
-    # Integer(ENV.fetch("WEB_CONCURRENCY", 2))
+    Integer(ENV.fetch("WEB_CONCURRENCY", 1))
   end
 
   # ENV used in `config/puma.rb` too.
   def puma_threads
-    5
     Integer(ENV.fetch("WEB_MAX_THREADS", 5))
   end
 
@@ -66,6 +61,6 @@ Sidekiq Server Configuration failed.
   # This is added to bring down the value of Concurrency
   # so that there's leeway to grow
   def paranoid_divisor
-    2
+    1
   end
 end
