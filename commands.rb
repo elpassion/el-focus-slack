@@ -26,5 +26,6 @@ class Commands
   require_relative 'commands/pause_session'
   require_relative 'commands/unpause_session'
   require_relative 'commands/stop_session'
+  require_relative 'commands/session_status'
   require_relative 'commands/unknown_message'
 end

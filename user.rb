@@ -5,6 +5,17 @@ class User
 
   attr_reader :user_id
 
+  class SessionStatus
+    attr_reader :time_left
+    def initialize(time_left = 0)
+      @time_left = time_left
+    end
+  end
+
+  SessionPaused     = Class.new(SessionStatus)
+  NoSession         = Class.new(SessionStatus)
+  SessionInProgress = Class.new(SessionStatus)
+
   def self.create(access_token:, user_id:)
     user = new(user_id)
     user.access_token = access_token
@@ -123,6 +134,13 @@ class User
     state     = current_state.merge('started_at' => Time.now.to_i, 'paused' => 0)
     storage.set session_key, state, ex: time_left
     SessionUpdateResult.ok
+  end
+
+  def session_status
+    return NoSession.new unless session_exists?
+    return SessionPaused.new if session_paused?
+
+    SessionInProgress.new(session_time_left)
   end
 
   private
