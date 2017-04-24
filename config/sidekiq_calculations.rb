@@ -61,6 +61,6 @@ Sidekiq Server Configuration failed.
   # This is added to bring down the value of Concurrency
   # so that there's leeway to grow
   def paranoid_divisor
-    1
+    2
   end
 end
