@@ -11,11 +11,7 @@ class Workers::Scheduler
     user = User.new(user_id)
     user.decrement_send_busy_messages_jobs_count
 
-    if user.scheduled_send_busy_messages_jobs_count > 0
-      puts "RETURNING:"
-      puts "user.scheduled_send_busy_messages_jobs_count: #{user.scheduled_send_busy_messages_jobs_count}"
-      return
-    end
+    return if user.scheduled_send_busy_messages_jobs_count > 0
 
     unless user.session_exists?
       schedule_session_finish_notification(
