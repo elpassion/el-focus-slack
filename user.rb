@@ -37,6 +37,10 @@ class User
     storage.set(send_busy_messages_jobs_count_key, scheduled_send_busy_messages_jobs_count - 1)
   end
 
+  def exists?
+    !!storage.get(user_key)
+  end
+
   def increment_send_busy_messages_jobs_count
     storage.set(send_busy_messages_jobs_count_key, scheduled_send_busy_messages_jobs_count + 1)
   end

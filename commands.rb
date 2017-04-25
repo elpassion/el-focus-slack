@@ -5,6 +5,8 @@ class Commands
     end
 
     def handle(message, conversation, user)
+      return UserNotFoundMessage.new(conversation, user).call if !user.exists?
+
       handler = commands
                 .lazy
                 .map { |command| command.try_build(message, conversation, user) }
@@ -27,4 +29,5 @@ class Commands
   require_relative 'commands/unpause_session'
   require_relative 'commands/stop_session'
   require_relative 'commands/unknown_message'
+  require_relative 'commands/user_not_found_message'
 end
