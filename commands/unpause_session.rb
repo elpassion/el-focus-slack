@@ -19,7 +19,7 @@ class Commands
 
     def unpause_session
       user.unpause_session.ok do
-        Workers::SetSnoozeWorker.perform_async(user.user_id, (user.session_time_left / 60))
+        Workers::SetSnoozeWorker.perform_async(user.user_id, user.session_time_left.minutes)
       end
     end
   end

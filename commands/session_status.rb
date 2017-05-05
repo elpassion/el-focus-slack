@@ -21,8 +21,8 @@ class Commands
       end
     end
 
-    def format_time_left(seconds_left)
-      minutes = (seconds_left / 60.0).round
+    def format_time_left(time_left)
+      minutes = time_left.minutes
       "#{minutes} #{minutes > 1 ? 'minutes' : 'minute'} left in session"
     end
   end
