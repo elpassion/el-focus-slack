@@ -7,6 +7,7 @@ describe Commands::SessionStatus do
 
   let(:user) { User.create(access_token: 'access-token', user_id: 'test-user-id') }
   let(:conversation) { instance_double('Conversation') }
+  let(:time_left) { Session::TimeLeft.new(25 * 60) }
 
   before do
     allow(conversation).to receive(:post_message)
@@ -18,7 +19,7 @@ describe Commands::SessionStatus do
   end
 
   it 'sends message with time left' do
-    allow(user).to receive(:session_time_left).and_return(25 * 60)
+    allow(user).to receive(:session_time_left).and_return(time_left)
     expect(conversation).to receive(:post_message).with('25 minutes left in session')
     subject.call
   end

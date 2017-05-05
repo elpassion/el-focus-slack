@@ -1,5 +1,6 @@
 class User
   require_relative 'workers'
+  require_relative 'session'
 
   DEFAULT_SESSION_TIME = 25
 
@@ -7,7 +8,7 @@ class User
 
   class SessionStatus
     attr_reader :time_left
-    def initialize(time_left = 0)
+    def initialize(time_left = Session::TimeLeft.new(0))
       @time_left = time_left
     end
   end
@@ -65,7 +66,7 @@ class User
       return SessionUpdateResult.error('session already paused')
     end
 
-    state = session.merge('paused' => 1, 'time_left' => session_time_left)
+    state = session.merge('paused' => 1, 'time_left' => session_time_left.seconds)
 
     storage.set session_key, state
     SessionUpdateResult.ok
@@ -82,7 +83,7 @@ class User
 
   def start_session(time = nil)
     if session_in_progress?
-      return SessionUpdateResult.error("Session already in progress (time left: #{session_time_left / 60} minutes)")
+      return SessionUpdateResult.error("Session already in progress (time left: #{session_time_left.minutes} minutes)")
     end
 
     if session_paused?
@@ -126,7 +127,7 @@ class User
   def session_time_left
     started      = session.fetch('started_at').to_i
     elapsed_time = Time.now.to_i - started
-    session.fetch('time_left').to_i - elapsed_time
+    Session::TimeLeft.new(session.fetch('time_left').to_i - elapsed_time)
   end
 
   def unpause_session
