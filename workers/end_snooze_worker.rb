@@ -7,7 +7,7 @@ class Workers::EndSnoozeWorker
   def perform(user_id)
     user = User.new(user_id)
 
-    client = SlackClient.for_acces_token(user.access_token)
+    client = SlackClient.for_user(user)
 
     client.dnd_endSnooze
   rescue Slack::Web::Api::Error => error

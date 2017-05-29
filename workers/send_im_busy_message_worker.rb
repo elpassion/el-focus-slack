@@ -4,7 +4,7 @@ class Workers::SendImBusyMessageWorker
 
   def perform(user_id, channel_id, interlocutor_id)
     user = User.new(user_id)
-    client = SlackClient.for_acces_token(user.access_token)
+    client = SlackClient.for_user(user)
     channel_history = client.im_history(channel: channel_id, count: 1, unreads: 1)
     return if channel_history.messages.empty?
 

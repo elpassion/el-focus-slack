@@ -35,7 +35,7 @@ class Workers::Scheduler
   end
 
   def schedule_i_am_busy_workers(user)
-    client = SlackClient.for_acces_token(user.access_token)
+    client = SlackClient.for_user(user)
 
     channels(client).each do |channel|
       Workers::SendImBusyMessageWorker.perform_async(

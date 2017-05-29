@@ -5,6 +5,10 @@ class SlackClient
     new(access_token).get
   end
 
+  def self.for_user(user)
+    for_acces_token(user.access_token)
+  end
+
   def initialize(access_token)
     @access_token = access_token
   end
