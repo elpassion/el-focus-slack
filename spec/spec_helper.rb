@@ -1,6 +1,8 @@
 ENV['RACK_ENV'] ||= 'test'
 
-Dotenv.load('.test.env') if defined?(Dotenv)
+require 'dotenv'
+
+Dotenv.load('.test.env')
 
 # It uses 'fakeredis'
 require 'sidekiq/testing'
