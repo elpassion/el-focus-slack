@@ -31,7 +31,7 @@ class Workers::Scheduler
   private
 
   def schedule_session_finish_notification(user_id, bot_access_token, bot_conversation_channel)
-    Workers::NotifySessionFinishedWorker.perform_async(bot_access_token, bot_conversation_channel)
+    Workers::NotifySessionFinishedWorker.perform_async(user_id, bot_access_token, bot_conversation_channel)
   end
 
   def schedule_i_am_busy_workers(user)
