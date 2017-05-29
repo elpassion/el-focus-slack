@@ -22,7 +22,6 @@ class Commands
           bot_conversation_channel: bot_conversation.channel
         )
         Workers::SetSnoozeWorker.perform_async(user.user_id, user.session_time_left.minutes)
-        log_connections_count
       end
     end
 
