@@ -22,6 +22,7 @@ class Commands
           bot_conversation_channel: bot_conversation.channel
         )
         Workers::SetSnoozeWorker.perform_async(user.user_id, user.session_time_left.minutes)
+        Workers::SetStatusWorker.perform_async(user.user_id)
       end
     end
 

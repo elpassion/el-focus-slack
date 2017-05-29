@@ -84,6 +84,11 @@ describe Commands::StartSession do
         .to change(Workers::Scheduler.jobs, :size).by(1)
     end
 
+    it 'should schedule SetStatus job' do
+      expect { subject.call }
+        .to change(Workers::SetStatusWorker.jobs, :size).by(1)
+    end
+
     context 'with time' do
       let(:time) { 5 }
 
