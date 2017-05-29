@@ -13,11 +13,11 @@ class Conversation
   end
 
   def post_message(message)
-    client.chat_postMessage(text: message, channel: channel)
+    client.call(:chat_postMessage, text: message, channel: channel)
   end
 
   def access_token
-    client.token
+    client.access_token
   end
 
   private

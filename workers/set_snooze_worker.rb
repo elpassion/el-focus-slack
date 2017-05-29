@@ -8,6 +8,6 @@ class Workers::SetSnoozeWorker
 
     client = SlackClient.for_user(user)
 
-    client.dnd_setSnooze(num_minutes: time)
+    client.call(:dnd_setSnooze, num_minutes: time)
   end
 end

@@ -1,20 +1,26 @@
 require 'slack-ruby-client'
 
 class SlackClient
-  def self.for_access_token(access_token)
-    new(access_token).get
-  end
-
-  def self.for_user(user)
-    for_access_token(user.access_token)
-  end
+  attr_reader :access_token
 
   def initialize(access_token)
     @access_token = access_token
   end
 
-  def get
-    self.class.create_slack_client(access_token)
+  def call(method, *args)
+    if args.empty?
+      client.send(method)
+    else
+      client.send(method, *args)
+    end
+  end
+
+  def self.for_access_token(access_token)
+    new(access_token)
+  end
+
+  def self.for_user(user)
+    for_access_token(user.access_token)
   end
 
   def self.oauth(code)
@@ -29,6 +35,11 @@ class SlackClient
 
   private
 
+  def client
+    @client ||=
+      self.class.create_slack_client(access_token)
+  end
+
   def self.create_slack_client(slack_api_secret)
     Slack.configure do |config|
       config.token = slack_api_secret
@@ -36,6 +47,4 @@ class SlackClient
     end
     Slack::Web::Client.new
   end
-
-  attr_reader :access_token
 end

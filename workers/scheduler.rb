@@ -47,6 +47,7 @@ class Workers::Scheduler
   end
 
   def channels(client)
-    client.im_list.ims
+    actual_client = client.send(:client)  #TODO: do not use send(:client)
+    actual_client.im_list.ims
   end
 end

@@ -13,6 +13,6 @@ class Workers::SetStatusWorker
 
     client = SlackClient.for_user(user)
 
-    client.users_profile_set(STATUS)
+    client.call(:users_profile_set, STATUS)
   end
 end
