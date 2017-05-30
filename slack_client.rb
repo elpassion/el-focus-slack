@@ -19,7 +19,8 @@ class SlackClient
         host = ENV['SLACK_REDIRECT_URI'].gsub('/finish_auth', '')
         send_message_to_access_token_owner("Permission update required - please go to #{host} and click \"Add to Slack\" button to fully enjoy EL Pomodoro!")
       when 'ratelimited'
-        raise error # TODO: handle it
+        sleep rand(4) + 3
+        call(method, *args)
       else
         raise error
     end

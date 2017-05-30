@@ -19,8 +19,11 @@ class Commands
 
     def unpause_session
       user.unpause_session.ok do
-        Workers::SetSnoozeWorker.perform_async(user.user_id, user.session_time_left.minutes)
-        Workers::SetStatusWorker.perform_async(user.user_id)
+        jobs = [
+          { 'job_class' => Workers::SetSnoozeWorker.to_s, 'job_arguments' => [user.user_id, user.session_time_left.minutes] },
+          { 'job_class' => Workers::SetStatusWorker.to_s, 'job_arguments' => [user.user_id] }
+        ]
+        Workers::OrderedMultipleJobsWorker.perform_async(jobs)
       end
     end
   end

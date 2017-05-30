@@ -21,8 +21,11 @@ class Commands
           bot_access_token:         bot_conversation.access_token,
           bot_conversation_channel: bot_conversation.channel
         )
-        Workers::SetSnoozeWorker.perform_async(user.user_id, user.session_time_left.minutes)
-        Workers::SetStatusWorker.perform_async(user.user_id)
+        jobs = [
+          { 'job_class' => Workers::SetSnoozeWorker.to_s, 'job_arguments' => [user.user_id, user.session_time_left.minutes] },
+          { 'job_class' => Workers::SetStatusWorker.to_s, 'job_arguments' => [user.user_id] }
+        ]
+        Workers::OrderedMultipleJobsWorker.perform_async(jobs)
       end
     end
 
