@@ -1,11 +1,13 @@
 require 'spec_helper'
 require_relative '../../commands'
 require_relative '../support/command_shared_examples'
+require_relative '../support/ordered_multiple_jobs_helper'
 
 describe Commands::UnpauseSession do
   subject { described_class.new(conversation, user) }
 
-  let(:user) { User.create(access_token: 'access-token', user_id: 'test-user-id') }
+  let(:user) { User.create(access_token: 'access-token', user_id: user_id) }
+  let(:user_id) { 'test-user-id' }
   let(:conversation) { instance_double('Conversation') }
 
   before do
@@ -39,16 +41,14 @@ describe Commands::UnpauseSession do
       subject.call
     end
 
-    it 'should schedule EndSnoozeWorker job' do
-      expect { subject.call }
-        .to change(Workers::SetSnoozeWorker.jobs, :size).by(1)
-    end
+    it 'should schedule OrderedMultipleJobs job' do
+      subject.call
 
-    context 'when called twice' do
-      it 'should schedule EndSnoozeWorker job once' do
-        expect { 2.times { subject.call } }
-          .to change(Workers::SetSnoozeWorker.jobs, :size).by(1)
-      end
+      self.extend(OrderedMultipleJobsHelper)
+      expect_schedule_multiple_jobs([
+                                      ['Workers::SetSnoozeWorker', [user_id, 25]],
+                                      ['Workers::SetStatusWorker', [user_id]],
+                                    ])
     end
   end
 end

@@ -11,8 +11,8 @@ describe Conversation do
 
     it 'should post message to channel' do
       expect(client)
-        .to receive(:chat_postMessage)
-              .with(text: message, channel: channel)
+        .to receive(:call)
+              .with(:chat_postMessage, text: message, channel: channel)
 
       subject.post_message(message)
     end

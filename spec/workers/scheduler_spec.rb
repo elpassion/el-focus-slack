@@ -1,4 +1,5 @@
 require 'spec_helper'
+require_relative '../support/ordered_multiple_jobs_helper'
 
 describe Workers::Scheduler do
   before do
@@ -53,7 +54,11 @@ describe Workers::Scheduler do
     it 'should schedule SendImBusyMessage' do
       subject
       expect(Workers::SendImBusyMessageWorker.jobs.size).to eql 0
-      expect(Workers::OrderedMultipleJobsWorker.jobs.size).to eql 1
+      self.extend(OrderedMultipleJobsHelper)
+      expect_schedule_multiple_jobs([
+                                      ['Workers::NotifySessionFinishedWorker', [user_id, access_token, channel_id]],
+                                      ['Workers::SetStatusWorker', [user_id, true]],
+                                    ])
     end
   end
 
