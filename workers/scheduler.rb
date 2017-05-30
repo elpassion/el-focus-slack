@@ -10,10 +10,9 @@ class Workers::Scheduler
 
     user = User.new(user_id)
     user.decrement_send_busy_messages_jobs_count
-p 1
+
     return if user.scheduled_send_busy_messages_jobs_count > 0
-p 2
-    puts "user.session_exists?: #{user.session_exists?}"
+
     unless user.session_exists?
       jobs = [
         { 'job_class' => Workers::NotifySessionFinishedWorker.to_s, 'job_arguments' => [user_id, bot_access_token, bot_conversation_channel] },
@@ -22,10 +21,10 @@ p 2
       Workers::OrderedMultipleJobsWorker.perform_async(jobs)
       return
     end
-p 3
+
     schedule_i_am_busy_workers(user) unless user.session_paused?
-p 4
-    self.class.perform_in 10, params
+
+    self.class.perform_in 20, params
     user.increment_send_busy_messages_jobs_count
   end
 
