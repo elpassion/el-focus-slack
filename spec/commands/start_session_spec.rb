@@ -1,11 +1,13 @@
 require 'spec_helper'
 require_relative '../../commands'
 require_relative '../../user'
+require_relative '../support/ordered_multiple_jobs_helper'
 
 describe Commands::StartSession do
   subject { described_class.new(conversation, user, time: time) }
 
-  let(:user) { User.create(access_token: access_token, user_id: 'test-user-id') }
+  let(:user) { User.create(access_token: access_token, user_id: user_id) }
+  let(:user_id) { 'test-user-id' }
   let(:access_token) { 'access-token' }
   let(:time) { nil }
   let(:conversation) { instance_double('Conversation') }
@@ -54,12 +56,13 @@ describe Commands::StartSession do
   end
 
   describe '#call' do
+    let(:channel_id) { 'channel-id' }
     let(:result) { User::SessionUpdateResult.ok }
 
     before do
       allow(conversation).to receive(:post_message)
       allow(conversation).to receive(:access_token).and_return(access_token)
-      allow(conversation).to receive(:channel).and_return('channel')
+      allow(conversation).to receive(:channel).and_return(channel_id)
     end
 
     it 'should start session' do
@@ -74,19 +77,22 @@ describe Commands::StartSession do
       subject.call
     end
 
-    it 'should schedule SetSnooze job' do
-      expect { subject.call }
-        .to change(Workers::SetSnoozeWorker.jobs, :size).by(1)
+    it 'should schedule OrderedMultipleJobs job' do
+      subject.call
+      self.extend(OrderedMultipleJobsHelper)
+      expect_schedule_multiple_jobs([
+                                      ['Workers::SetSnoozeWorker', [user_id, 25]],
+                                      ['Workers::SetStatusWorker', [user_id]],
+                                    ])
     end
 
     it 'should schedule Scheduler job' do
-      expect { subject.call }
-        .to change(Workers::Scheduler.jobs, :size).by(1)
-    end
-
-    it 'should schedule SetStatus job' do
-      expect { subject.call }
-        .to change(Workers::SetStatusWorker.jobs, :size).by(1)
+      subject.call
+      args = Workers::Scheduler.jobs.last.fetch('args')
+      expect(args.size).to eql 1
+      expect(args[0]).to eql({ "user_id"                  => user_id,
+                               "bot_access_token"         => access_token,
+                               "bot_conversation_channel" => channel_id })
     end
 
     context 'with time' do
@@ -103,9 +109,9 @@ describe Commands::StartSession do
     end
 
     context 'when called twice' do
-      it 'should schedule SetSnooze job once' do
+      it 'should schedule OrderedMultipleJobs job once' do
         expect { 2.times { subject.call } }
-          .to change(Workers::SetSnoozeWorker.jobs, :size).by(1)
+          .to change(Workers::OrderedMultipleJobsWorker.jobs, :size).by(1)
       end
 
       it 'should schedule Scheduler job once' do
