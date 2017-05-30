@@ -16,11 +16,5 @@ class Events
 
       Commands.handle(message, conversation, user)
     end
-
-    private
-
-    def client(access_token)
-      SlackClient.for_acces_token(access_token)
-    end
   end
 end

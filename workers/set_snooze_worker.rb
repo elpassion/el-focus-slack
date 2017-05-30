@@ -6,8 +6,8 @@ class Workers::SetSnoozeWorker
     user = User.new(user_id)
     return unless user.session_exists?
 
-    client = SlackClient.for_acces_token(user.access_token)
+    client = SlackClient.for_user(user)
 
-    client.dnd_setSnooze(num_minutes: time)
+    client.call(:dnd_setSnooze, num_minutes: time)
   end
 end

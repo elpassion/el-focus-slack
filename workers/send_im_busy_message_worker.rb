@@ -4,8 +4,8 @@ class Workers::SendImBusyMessageWorker
 
   def perform(user_id, channel_id, interlocutor_id)
     user = User.new(user_id)
-    client = SlackClient.for_acces_token(user.access_token)
-    channel_history = client.im_history(channel: channel_id, count: 1, unreads: 1)
+    client = SlackClient.for_user(user)
+    channel_history = client.call(:im_history, channel: channel_id, count: 1, unreads: 1)
     return if channel_history.messages.empty?
 
     last_message_author_id = channel_history.messages.last.user
@@ -15,7 +15,7 @@ class Workers::SendImBusyMessageWorker
       time_left = user.session_time_left.minutes
       minutes_text = time_left > 1 ? 'minutes' : 'minute'
       message = "Sorry, I'm busy right now. I'll be back in #{time_left} #{minutes_text}. _sent by El Pomodoro Slack App_"
-      client.chat_postMessage(channel: channel_id, text: message, as_user: true)
+      client.call(:chat_postMessage, channel: channel_id, text: message, as_user: true)
     end
   end
 end

@@ -2,7 +2,7 @@ class Conversation
   require_relative 'slack_client'
 
   def self.create(access_token, channel)
-    new(SlackClient.for_acces_token(access_token), channel)
+    new(SlackClient.for_access_token(access_token), channel)
   end
 
   attr_reader :channel
@@ -13,11 +13,11 @@ class Conversation
   end
 
   def post_message(message)
-    client.chat_postMessage(text: message, channel: channel)
+    client.call(:chat_postMessage, text: message, channel: channel)
   end
 
   def access_token
-    client.token
+    client.access_token
   end
 
   private

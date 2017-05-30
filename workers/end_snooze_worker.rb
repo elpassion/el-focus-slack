@@ -7,9 +7,9 @@ class Workers::EndSnoozeWorker
   def perform(user_id)
     user = User.new(user_id)
 
-    client = SlackClient.for_acces_token(user.access_token)
+    client = SlackClient.for_user(user)
 
-    client.dnd_endSnooze
+    client.call(:dnd_endSnooze)
   rescue Slack::Web::Api::Error => error
     return if error.message == SNOOZE_ALREADY_NOT_ACTIVE_ERROR_MESSAGE
     raise error

@@ -14,7 +14,11 @@ class Commands
 
     def pause_session
       user.pause_session.ok do
-        Workers::EndSnoozeWorker.perform_async(user.user_id)
+        jobs = [
+          { 'job_class' => Workers::EndSnoozeWorker.to_s, 'job_arguments' => [user.user_id] },
+          { 'job_class' => Workers::SetStatusWorker.to_s, 'job_arguments' => [user.user_id, true] }
+        ]
+        Workers::OrderedMultipleJobsWorker.perform_async(jobs)
       end
     end
   end

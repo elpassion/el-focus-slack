@@ -14,11 +14,11 @@ class Workers::Scheduler
     return if user.scheduled_send_busy_messages_jobs_count > 0
 
     unless user.session_exists?
-      schedule_session_finish_notification(
-        user_id,
-        bot_access_token,
-        bot_conversation_channel
-      )
+      jobs = [
+        { 'job_class' => Workers::NotifySessionFinishedWorker.to_s, 'job_arguments' => [user_id, bot_access_token, bot_conversation_channel] },
+        { 'job_class' => Workers::SetStatusWorker.to_s, 'job_arguments' => [user.user_id, true] }
+      ]
+      Workers::OrderedMultipleJobsWorker.perform_async(jobs)
       return
     end
 
@@ -30,12 +30,8 @@ class Workers::Scheduler
 
   private
 
-  def schedule_session_finish_notification(user_id, bot_access_token, bot_conversation_channel)
-    Workers::NotifySessionFinishedWorker.perform_async(user_id, bot_access_token, bot_conversation_channel)
-  end
-
   def schedule_i_am_busy_workers(user)
-    client = SlackClient.for_acces_token(user.access_token)
+    client = SlackClient.for_user(user)
 
     channels(client).each do |channel|
       Workers::SendImBusyMessageWorker.perform_async(
@@ -47,6 +43,7 @@ class Workers::Scheduler
   end
 
   def channels(client)
-    client.im_list.ims
+    actual_client = client.send(:client)  #TODO: do not use send(:client)
+    actual_client.im_list.ims
   end
 end
