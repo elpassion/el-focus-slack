@@ -19,6 +19,7 @@ class Workers::Scheduler
         bot_access_token,
         bot_conversation_channel
       )
+      schedule_clear_status(user_id)
       return
     end
 
@@ -29,6 +30,10 @@ class Workers::Scheduler
   end
 
   private
+
+  def schedule_clear_status(user_id)
+    Workers::SetStatusWorker.perform_async(user_id, true)
+  end
 
   def schedule_session_finish_notification(user_id, bot_access_token, bot_conversation_channel)
     Workers::NotifySessionFinishedWorker.perform_async(user_id, bot_access_token, bot_conversation_channel)

@@ -15,6 +15,7 @@ class Commands
     def pause_session
       user.pause_session.ok do
         Workers::EndSnoozeWorker.perform_async(user.user_id)
+        Workers::SetStatusWorker.perform_async(user.user_id, true)
       end
     end
   end
