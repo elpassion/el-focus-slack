@@ -15,15 +15,15 @@ class Commands
     def status
       status = user.session_status
       case status
-      when User::NoSession         then 'No session in progress'
-      when User::SessionPaused     then 'Session paused'
+      when User::NoSession         then 'No session in progress :coffee:'
+      when User::SessionPaused     then 'Session paused :stopwatch:'
       when User::SessionInProgress then format_time_left(status.time_left)
       end
     end
 
     def format_time_left(time_left)
       minutes = time_left.minutes
-      "#{minutes} #{minutes > 1 ? 'minutes' : 'minute'} left in session"
+      "#{minutes} #{minutes > 1 ? 'minutes' : 'minute'} left in session :timer_clock:"
     end
   end
 

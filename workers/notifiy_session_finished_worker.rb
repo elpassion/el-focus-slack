@@ -14,7 +14,7 @@ class Workers::NotifySessionFinishedWorker
   def send_message_about_finished_session(bot_access_token, bot_conversation_channel)
     Conversation
       .create(bot_access_token, bot_conversation_channel)
-      .post_message('session finished')
+      .post_message('Session finished :slightly_smiling_face: :thumbsup:')
   end
 
   def turn_off_snooze(user_id)

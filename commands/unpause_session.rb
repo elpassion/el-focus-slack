@@ -12,7 +12,7 @@ class Commands
     end
 
     def call
-      respond_with('session unpaused') { unpause_session }
+      respond_with('Session unpaused! :tomato:') { unpause_session }
     end
 
     private

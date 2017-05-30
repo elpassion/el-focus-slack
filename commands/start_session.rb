@@ -34,7 +34,7 @@ class Commands
     end
 
     def message
-      "session started (#{time || User::DEFAULT_SESSION_TIME} minutes)"
+      "Session started! :tomato: (#{time || User::DEFAULT_SESSION_TIME} minutes)"
     end
   end
 

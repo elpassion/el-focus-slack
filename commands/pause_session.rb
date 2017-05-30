@@ -7,7 +7,7 @@ class Commands
     end
 
     def call
-      respond_with('session paused') { pause_session }
+      respond_with('Session paused :stopwatch:') { pause_session }
     end
 
     private
