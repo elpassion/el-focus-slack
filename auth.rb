@@ -8,6 +8,15 @@ class Auth < Sinatra::Base
     erb :index
   end
 
+  get '/stats' do
+    stats = Sidekiq::Stats.new
+    {
+      failed: stats.failed,
+      processed: stats.processed,
+      scheduled_size: stats.scheduled_size,
+    }.to_json
+  end
+
   get '/finish_auth' do
     begin
       response = SlackClient.oauth(params['code'])

@@ -3,6 +3,7 @@ require 'bundler/setup'
 
 require_groups = [:default, :web, ENV['RACK_ENV']].compact
 Bundler.require(*require_groups)
+require 'sidekiq/api' # required to use Sidekiq::Stats
 
 Dotenv.load if defined?(Dotenv)
 
