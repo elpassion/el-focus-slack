@@ -17,6 +17,11 @@ class Auth < Sinatra::Base
     }.to_json
   end
 
+  get '/support' do
+    status 200
+    erb :support
+  end
+
   get '/finish_auth' do
     begin
       response = SlackClient.oauth(params['code'])

@@ -43,8 +43,8 @@ header .hr {
     border-top: 1px solid #36b452;
 }
 header .container {
-    padding-top: 100px;
-    padding-bottom: 50px;
+    padding-top: 35px;
+    padding-bottom: 0px;
 }
 header img {
     display: block;
@@ -65,9 +65,22 @@ header .intro-text .skills {
     font-size: 1.25em;
     font-weight: 300;
 }
+header.header-small .container {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+header.header-small .intro-text .name {
+    font-size: 1.6em;
+}
+header.header-small .intro-text sub {
+    font-size: 0.35em;
+}
+header.header-small .intro-text .skills {
+    font-size: 1.2em;
+}
 @media (min-width: 768px) {
     header .container {
-        padding-top: 100px;
+        padding-top: 35px;
         padding-bottom: 0px;
     }
     header .intro-text .name {
