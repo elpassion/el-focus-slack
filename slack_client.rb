@@ -17,7 +17,7 @@ class SlackClient
     case error.message
       when 'missing_scope'
         host = ENV['SLACK_REDIRECT_URI'].gsub('/finish_auth', '')
-        send_message_to_access_token_owner("Permission update required - please go to #{host} and click \"Add to Slack\" button to fully enjoy EL Pomodoro!")
+        send_message_to_access_token_owner("Permission update required - please go to #{host} and click \"Add to Slack\" button to fully enjoy EL Focus!")
       when 'ratelimited'
         sleep rand(4) + 3
         call(method, *args)

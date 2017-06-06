@@ -14,7 +14,7 @@ class Workers::SendImBusyMessageWorker
       puts "sending message to channel=#{channel_id}, interlocutor_id=#{interlocutor_id}"
       time_left = user.session_time_left.minutes
       minutes_text = time_left > 1 ? 'minutes' : 'minute'
-      message = "Sorry, I'm busy right now. I'll be back in #{time_left} #{minutes_text}. _sent by El Pomodoro Slack App_"
+      message = "Sorry, I'm busy right now. I'll be back in #{time_left} #{minutes_text}. _sent by EL Focus_"
       client.call(:chat_postMessage, channel: channel_id, text: message, as_user: true)
     end
   end
