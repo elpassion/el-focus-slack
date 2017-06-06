@@ -1,4 +1,4 @@
-# El Pomodoro Slack
+# EL Focus Slack
 
 ## Development
 
