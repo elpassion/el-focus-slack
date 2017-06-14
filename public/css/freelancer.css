@@ -8,10 +8,10 @@ body {
     overflow-x: hidden;
 }
 p {
-    font-size: 20px;
+    font-size: 15px;
 }
 p.small {
-    font-size: 16px;
+    font-size: 12px;
 }
 a,
 a:hover,
@@ -35,16 +35,14 @@ h6 {
     margin: 0 auto;
 }
 header {
-    text-align: center;
-    /*background: #36b452;*/
+    background-color: #f2ffeb;
+    border-bottom: 1px solid #36b452;
     color: #36b452;
-}
-header .hr {
-    border-top: 1px solid #36b452;
+    text-align: center;
 }
 header .container {
-    padding-top: 35px;
-    padding-bottom: 0px;
+    padding-top: 30px;
+    padding-bottom: 30px;
 }
 header img {
     display: block;
@@ -55,41 +53,42 @@ header .intro-text .name {
     font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
     text-transform: uppercase;
     font-weight: 700;
-    font-size: 2em;
-}
-header .intro-text .name sub {
-    font-size: 0.2em;
-    font-weight: normal;
-}
-header .intro-text .skills {
-    font-size: 1.25em;
-    font-weight: 300;
-}
-header.header-small .container {
-    padding-top: 30px;
-    padding-bottom: 30px;
-}
-header.header-small .intro-text .name {
     font-size: 1.6em;
 }
-header.header-small .intro-text sub {
-    font-size: 0.35em;
+header .intro-text .name a {
+    color: #278c37;
+    text-decoration: none;
 }
-header.header-small .intro-text .skills {
+header .intro-text .skills {
     font-size: 1.2em;
+    font-weight: 300;
 }
 @media (min-width: 768px) {
     header .container {
-        padding-top: 35px;
-        padding-bottom: 0px;
+        padding-top: 15px;
+        padding-bottom: 10px;
     }
     header .intro-text .name {
-        font-size: 4.75em;
+        font-size: 2.25em;
     }
     header .intro-text .skills {
-        font-size: 1.75em;
+        font-size: 1.25em;
     }
 }
+
+footer {
+    background: #f2ffeb;
+    background: -webkit-linear-gradient(#f2ffeb, white); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#f2ffeb, white); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#f2ffeb, white); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#f2ffeb, white); /* Standard syntax */
+    border-top: 1px solid #36b452;
+    font-size: 1.25em;
+    padding-top: 10px;
+    padding-bottom: 25px;
+    text-align: center;
+}
+
 .navbar-custom {
     background: #2C3E50;
     font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -178,7 +177,7 @@ section.success {
 }
 @media (max-width: 767px) {
     section {
-        padding: 75px 0;
+        padding: 50px 0;
     }
     section.first {
         padding-top: 75px;
@@ -199,9 +198,17 @@ section.success {
 
 .usage .commands {
     text-align: left;
-    font-size: larger;
+    /*font-size: larger;*/
 }
 
 .command {
     width: 20%;
+}
+
+.el-focus-text {
+    white-space: nowrap;
+    color: #0b8a1e;
+}
+span.no-wrap {
+    white-space: nowrap;
 }

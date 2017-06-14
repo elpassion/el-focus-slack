@@ -17,8 +17,11 @@ class Auth < Sinatra::Base
     }.to_json
   end
 
+  get '/privacy' do
+    erb :privacy
+  end
+
   get '/support' do
-    status 200
     erb :support
   end
 

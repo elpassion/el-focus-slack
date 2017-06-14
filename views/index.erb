@@ -1,53 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Away messages for Slack">
-  <meta name="author" content="">
-
-  <title>EL Focus - away messages for Slack</title>
-
-  <!-- Bootstrap Core CSS -->
-  <link href="css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Theme CSS -->
-  <link href="css/freelancer.css" rel="stylesheet">
-
-  <!-- Custom Fonts -->
-  <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
-</head>
-
-<body id="page-top" class="index">
-<% if locals[:error] %>
-  <div class="error-message">
-    <%= error %>
-  </div>
-<% end %>
-
-<!-- Header -->
-<header>
-  <div class="container">
+<section>
+  <div class="usage">
     <div class="row">
-      <div class="col-lg-12">
-        <div class="intro-text">
-          <span class="name">EL Focus</span>
-          <span class="skills">away messages for <b>Slack</b></span>
-        </div>
+      <div class="col-lg-6 col-lg-offset-3">
+        <p>1.
+          <a href="https://slack.com/oauth/authorize?scope=bot+im:read+im:history+chat:write:user+dnd:write+users.profile:read+users.profile:write&client_id=<%= SLACK_CONFIG[:client_id] %>&redirect_uri=<%= SLACK_CONFIG[:redirect_uri] %>">
+            <img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" style="position: relative; top: -3px"/>
+          </a></p>
+        <p>2. <i>elfocus</i> bot will appear in your team
+          <img src="img/elpomodoro-bot.png" alt="bot" style="border: 1px solid darkgray; margin-left: 5px; position:relative; top: -1px; width: 105px; height: 26px;">
+        </p>
+        <p>
+          3. Talk to him!
+        </p>
       </div>
     </div>
-    <hr class="hr" />
+
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2">
+        <p>Available commands are: </p>
+      </div>
+      <%= erb(:_commands) %>
+    </div>
+
+    <br/>
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2">
+        <p> Automatic response will be sent to a person who messages you during session. </p>
+        <p> During session your notifications are snoozed. </p>
+      </div>
+    </div>
   </div>
-</header>
-
-<%= erb(:_usage) %>
-<%= erb(:_feedback_link) %>
-
-</body>
-
-</html>
+</section>
