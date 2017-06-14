@@ -20,7 +20,7 @@ describe Commands::SessionStatus do
 
   it 'sends message with time left' do
     allow(user).to receive(:session_time_left).and_return(time_left)
-    expect(conversation).to receive(:post_message).with('25 minutes left in session')
+    expect(conversation).to receive(:post_message).with('25 minutes left in session :timer_clock:')
     subject.call
   end
 
@@ -28,7 +28,7 @@ describe Commands::SessionStatus do
     before { user.pause_session }
 
     it 'sends messages that session is paused' do
-      expect(conversation).to receive(:post_message).with('Session paused')
+      expect(conversation).to receive(:post_message).with('Session paused :stopwatch:')
       subject.call
     end
   end
@@ -37,7 +37,7 @@ describe Commands::SessionStatus do
     before { user.stop_session }
 
     it 'sends message that no session is in progress' do
-      expect(conversation).to receive(:post_message).with('No session in progress')
+      expect(conversation).to receive(:post_message).with('No session in progress :coffee:')
       subject.call
     end
   end
